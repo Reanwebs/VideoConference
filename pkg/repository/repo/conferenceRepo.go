@@ -9,6 +9,6 @@ type ConferenceRepo struct {
 	interfaces.Conference
 }
 
-func (ConferenceRepo) CreateRoom(s string) {
-	fmt.Println(s)
+func (c *ConferenceRepo) CreateRoom(s string) {
+	fmt.Println("sssssssssssssssssssss", s)
 }

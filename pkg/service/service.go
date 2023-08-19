@@ -12,7 +12,6 @@ type Conference struct {
 
 func (s *Conference) HealthCheck(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	log.Println("Conference: Health Checked")
-
 	result := "Hello, " + req.Data
 	return &pb.Response{Result: result}, nil
 }
