@@ -1,7 +1,7 @@
 package interfaces
 
 type Conference interface {
-	CreateRoom()
+	CreateRoom(string)
 	AddParticipant()
 	CheckLimit()
 	CheckType()

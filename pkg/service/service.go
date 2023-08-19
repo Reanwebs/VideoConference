@@ -18,7 +18,6 @@ func (s *Conference) HealthCheck(ctx context.Context, req *pb.Request) (*pb.Resp
 }
 
 func (s *Conference) StartConference(ctx context.Context, req *pb.StartConferenceRequest) (*pb.StartConferenceResponse, error) {
-
 	response := pb.StartConferenceResponse{
 		ConferenceID: 101,
 	}
