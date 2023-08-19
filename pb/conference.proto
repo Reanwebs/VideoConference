@@ -1,0 +1,167 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+option go_package = "/pb";
+
+package pb;
+
+service Conference{
+  rpc HealthCheck(Request) returns (Response);
+  rpc StartConference (StartConferenceRequest) returns (StartConferenceResponse){}
+  rpc JoinConference (JoinConferenceRequest) returns (JoinConferenceResponse){}
+  rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
+  rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
+  rpc RemoveParticipant (RemoveParticipantRequest) returns (RemoveParticipantResponse){}
+  rpc ToggleCamera (ToggleCameraRequest) returns (ToggleCameraResponse){}
+  rpc ToggleMic (ToggleMicRequest) returns (ToggleMicResponse){}
+  rpc ToggleParticipantCamera(ToggleParticipantCameraRequest) returns (ToggleParticipantCameraResponse){}
+  rpc ToggleParticipantMic(ToggleParticipantMicRequest) returns (ToggleParticipantMicResponse){}
+  rpc EndConference(EndConferenceRequest) returns (EndConferenceResponse){}
+}
+
+
+message Request {
+  string data = 1;
+}
+
+message Response {
+  string result = 1;
+}
+
+
+// Start Conference
+
+message StartConferenceRequest {
+    string userID  = 1;
+    string type    = 2;
+    string title   = 3;
+    string description = 4;
+    string interest    = 5;
+    bool   recording   = 6;
+    bool   chat        = 7;
+    bool   broadcast   = 8;
+    int32  participantlimit = 9;
+    
+ }
+
+message StartConferenceResponse {
+   string link = 1;
+   string offer= 2;
+   int32  conferenceID = 3;
+
+ }
+
+//  Join Conference
+
+ message JoinConferenceRequest {
+   string userID       = 1;
+   int32  conferenceID = 2;
+ }
+
+message JoinConferenceResponse {
+   string result = 1;
+ }
+
+//  AcceptJoinRequest
+
+ message AcceptJoiningRequest {
+   string userID = 1;
+   string conferenceID = 2;
+}
+
+message AcceptJoiningResponse {
+   string result = 1;
+}
+
+// Decline Joining
+message DeclineJoiningRequest {
+   string userID = 1;
+   string conferenceID = 2;
+}
+
+message DeclineJoiningResponse {
+    string result = 1;
+}
+
+// RemoveParticipant
+
+message RemoveParticipantRequest {
+    string userID = 1;
+    string conferenceID = 2;
+    bool   block        = 3;
+}
+
+message RemoveParticipantResponse {
+    string result = 1;
+}
+
+
+// ToggleCamera
+
+message ToggleCameraRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+
+message ToggleCameraResponse {
+    string result = 1;
+}
+
+// ToggleMic
+
+message ToggleMicRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message ToggleMicResponse {
+    string result = 1;
+}
+
+// ToggleParticipantCamera
+
+message ToggleParticipantCameraRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message ToggleParticipantCameraResponse {
+    string result = 1;
+}
+
+
+// ToggleParticipantMic
+
+message ToggleParticipantMicRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message ToggleParticipantMicResponse {
+    string result = 1;
+}
+
+// LeaveConference
+
+message LeaveConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message LeaveConferenceResponse {
+    string result = 1;
+}
+
+
+// EndConference
+
+message EndConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message EndConferenceResponse {
+    string result = 1;
+}
