@@ -1,7 +1,9 @@
 package interfaces
 
+import "conference/pkg/common/utility"
+
 type ConferenceRepo interface {
-	CreateRoom(string)
+	CreateRoom(utility.ConferenceRoom) (uint, error)
 	AddParticipant()
 	CheckLimit()
 	CheckType()

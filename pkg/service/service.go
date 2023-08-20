@@ -2,9 +2,12 @@ package service
 
 import (
 	"conference/pb"
+	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
 	"log"
+
+	"github.com/jinzhu/copier"
 )
 
 type ConferenceServer struct {
@@ -20,14 +23,19 @@ func NewConferenceServer(repo interfaces.ConferenceRepo) *ConferenceServer {
 
 func (s *ConferenceServer) HealthCheck(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	log.Println("Conference: Health Checked")
-	s.Repo.CreateRoom("Hi")
 	result := "Hello, " + req.Data
 	return &pb.Response{Result: result}, nil
 }
 
 func (s *ConferenceServer) StartConference(ctx context.Context, req *pb.StartConferenceRequest) (*pb.StartConferenceResponse, error) {
+	var input utility.ConferenceRoom
+	copier.Copy(&input, req)
+	conferenceID, err := s.Repo.CreateRoom(input)
+	if err != nil {
+		log.Fatal(err)
+	}
 	response := pb.StartConferenceResponse{
-		ConferenceID: 101,
+		ConferenceID: int32(conferenceID),
 	}
 	return &response, nil
 }
@@ -93,4 +101,8 @@ func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConfere
 		Result: "Conference ended",
 	}
 	return &response, nil
+}
+
+func (s *ConferenceServer) mustEmbedUnimplementedConferenceServer() {
+
 }

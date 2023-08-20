@@ -2,6 +2,7 @@ package database
 
 import (
 	"conference/pkg/common/config"
+	"conference/pkg/common/utility"
 	"fmt"
 
 	"gorm.io/driver/postgres"
@@ -18,6 +19,6 @@ func ConnectToDB(cfg config.Config) *gorm.DB {
 		return nil
 	}
 	DB = db
-	DB.AutoMigrate()
+	DB.AutoMigrate(utility.ConferenceRoom{})
 	return db
 }
