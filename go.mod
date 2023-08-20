@@ -3,6 +3,7 @@ module conference
 go 1.21.0
 
 require (
+	github.com/google/wire v0.5.0
 	github.com/spf13/viper v1.16.0
 	google.golang.org/grpc v1.57.0
 	google.golang.org/protobuf v1.31.0

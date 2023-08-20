@@ -1,14 +1,40 @@
 package repo
 
 import (
-	"conference/pkg/repository/interfaces"
 	"fmt"
+
+	"gorm.io/gorm"
 )
 
-type ConferenceRepo struct {
-	interfaces.Conference
+type conferenceRepo struct {
+	DB *gorm.DB
 }
 
-func (c *ConferenceRepo) CreateRoom(s string) {
+func NewConferenceRepo(db *gorm.DB) *conferenceRepo {
+	return &conferenceRepo{
+		DB: db,
+	}
+}
+
+func (c *conferenceRepo) CreateRoom(s string) {
 	fmt.Println("sssssssssssssssssssss", s)
+}
+
+func (c *conferenceRepo) AddParticipant() {
+	fmt.Println("sssssssssssssssssssss")
+}
+func (c *conferenceRepo) CheckLimit() {
+	fmt.Println("sssssssssssssssssssss")
+}
+func (c *conferenceRepo) CheckType() {
+	fmt.Println("sssssssssssssssssssss")
+}
+func (c *conferenceRepo) CheckInterest() {
+	fmt.Println("sssssssssssssssssssss")
+}
+func (c *conferenceRepo) RemoveParticipant() {
+	fmt.Println("sssssssssssssssssssss")
+}
+func (c *conferenceRepo) RemoveRoom() {
+	fmt.Println("sssssssssssssssssssss")
 }

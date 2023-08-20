@@ -1,6 +1,6 @@
 package interfaces
 
-type Conference interface {
+type ConferenceRepo interface {
 	CreateRoom(string)
 	AddParticipant()
 	CheckLimit()
