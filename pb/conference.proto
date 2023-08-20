@@ -40,7 +40,6 @@ message StartConferenceRequest {
     bool   chat        = 7;
     bool   broadcast   = 8;
     int32  participantlimit = 9;
-    
  }
 
 message StartConferenceResponse {

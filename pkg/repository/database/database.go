@@ -1,6 +1,7 @@
 package database
 
 import (
+	"conference/pkg/common/config"
 	"conference/pkg/common/utility"
 	"fmt"
 
@@ -10,13 +11,14 @@ import (
 
 var DB *gorm.DB
 
-func ConnectToDB() (*gorm.DB, error) {
-	config, err := utility.LoadConfig("./")
-	db, err := gorm.Open(postgres.Open(config.DSN), &gorm.Config{})
+func ConnectToDB(cfg config.Config) *gorm.DB {
+	psqlInfo := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DbHost, cfg.DbUser, cfg.DbName, cfg.DbPort, cfg.DbPassword)
+	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("failed to connect to database: %w", err)
+		fmt.Println("failed to connect to database:", err)
+		return nil
 	}
 	DB = db
-	DB.AutoMigrate()
-	return db, nil
+	DB.AutoMigrate(utility.ConferenceRoom{})
+	return db
 }
