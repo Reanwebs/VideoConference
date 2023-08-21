@@ -5,7 +5,10 @@ import (
 	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
+	"fmt"
 	"log"
+	"math/rand"
+	"time"
 
 	"github.com/jinzhu/copier"
 )
@@ -23,7 +26,10 @@ func NewConferenceServer(repo interfaces.ConferenceRepo) *ConferenceServer {
 
 func (s *ConferenceServer) HealthCheck(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 	log.Println("Conference: Health Checked")
-	result := "Hello, " + req.Data
+	timestamp := time.Now().UnixNano()
+	randomNumber := rand.Intn(1000000)
+	traceID := fmt.Sprintf("%d-%d", timestamp, randomNumber)
+	result := traceID + " " + req.Data
 	return &pb.Response{Result: result}, nil
 }
 

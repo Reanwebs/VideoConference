@@ -26,7 +26,7 @@ func NewGrpcServer(cfg config.Config, server pb.ConferenceServer) *Server {
 	return &Server{GrpcServer: grpcServer, PortListener: listener}
 }
 
-func (s *Server) StartServer() error {
-	log.Println("Conference service is running...5050")
+func (s *Server) StartServer(cfg config.Config) error {
+	log.Println("Conference service is running...", cfg.Port)
 	return s.GrpcServer.Serve(s.PortListener)
 }
