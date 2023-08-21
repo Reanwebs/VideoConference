@@ -16,7 +16,7 @@ import (
 // 		service.NewConferenceServer,
 // 		service.NewGrpcServer,
 // 	)
-// 	return nil, nil // This return value will be ignored
+// 	return nil, nil
 // }
 
 func InitializeAPI(cfg config.Config) (*service.Server, error) {

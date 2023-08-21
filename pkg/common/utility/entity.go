@@ -21,3 +21,15 @@ type ConferenceRoom struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
+
+type ConferenceParticipants struct {
+	gorm.Model
+	UserID       string
+	ConferenceID uint
+	Permission   bool
+	CamStatus    string
+	MicStatus    string
+	JoinTime     time.Time
+	ExitTime     time.Time
+	Role         string
+}
