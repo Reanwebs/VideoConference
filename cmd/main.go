@@ -16,7 +16,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	} else {
-		if err := server.StartServer(); err != nil {
+		if err := server.StartServer(config); err != nil {
 			log.Fatalln(err)
 		}
 

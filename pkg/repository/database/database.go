@@ -4,6 +4,7 @@ import (
 	"conference/pkg/common/config"
 	"conference/pkg/common/utility"
 	"fmt"
+	"log"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -15,7 +16,7 @@ func ConnectToDB(cfg config.Config) *gorm.DB {
 	psqlInfo := fmt.Sprintf("host=%s user=%s dbname=%s port=%s password=%s", cfg.DbHost, cfg.DbUser, cfg.DbName, cfg.DbPort, cfg.DbPassword)
 	db, err := gorm.Open(postgres.Open(psqlInfo), &gorm.Config{})
 	if err != nil {
-		fmt.Println("failed to connect to database:", err)
+		log.Fatalln(err)
 		return nil
 	}
 	DB = db
