@@ -5,12 +5,17 @@ import (
 	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
 	"time"
 
 	"github.com/jinzhu/copier"
+)
+
+var (
+	err error
 )
 
 type ConferenceServer struct {
@@ -38,7 +43,21 @@ func (s *ConferenceServer) StartConference(ctx context.Context, req *pb.StartCon
 	copier.Copy(&input, req)
 	conferenceID, err := s.Repo.CreateRoom(input)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	participantInput := utility.ConferenceParticipants{
+		UserID:       req.UserID,
+		ConferenceID: uint(conferenceID),
+		Permission:   true,
+		CamStatus:    "active",
+		MicStatus:    "active",
+		JoinTime:     time.Now(),
+		Role:         "host",
+	}
+	if err = s.Repo.AddParticipant(participantInput); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
 	}
 	response := pb.StartConferenceResponse{
 		ConferenceID: int32(conferenceID),
@@ -47,17 +66,66 @@ func (s *ConferenceServer) StartConference(ctx context.Context, req *pb.StartCon
 }
 
 func (s *ConferenceServer) JoinConference(ctx context.Context, req *pb.JoinConferenceRequest) (*pb.JoinConferenceResponse, error) {
-	response := pb.JoinConferenceResponse{
-		Result: "Join request send",
+	conferenceID := req.ConferenceID
+	userID := req.UserID
+	response := pb.JoinConferenceResponse{}
+	participantLimit, err := s.Repo.CheckLimit(conferenceID)
+	if err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
 	}
-	return &response, nil
+	currentParticipants, err := s.Repo.CountParticipants(conferenceID)
+	if err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	permission, err := s.Repo.CheckParticipantPermission(conferenceID, userID)
+	if err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	if permission == false {
+		response = pb.JoinConferenceResponse{
+			Result: "Participant permission denied",
+		}
+		return &response, errors.New("Participant permission denied")
+	}
+	if currentParticipants < participantLimit {
+		response = pb.JoinConferenceResponse{
+			Result: "Join request send",
+		}
+		return &response, nil
+	} else {
+		response = pb.JoinConferenceResponse{
+			Result: "Participant limit exceeded",
+		}
+		return &response, errors.New("Participant limit exceeded")
+	}
 }
 
 func (s *ConferenceServer) AcceptJoining(ctx context.Context, req *pb.AcceptJoiningRequest) (*pb.AcceptJoiningResponse, error) {
-	response := pb.AcceptJoiningResponse{
-		Result: "Join request accepted",
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	participantInput := utility.ConferenceParticipants{
+		UserID:       userID,
+		ConferenceID: uint(conferenceID),
+		Permission:   true,
+		CamStatus:    "active",
+		MicStatus:    "active",
+		JoinTime:     time.Now(),
+		Role:         "user",
 	}
-	return &response, nil
+
+	err = s.Repo.AddParticipant(participantInput)
+	if err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	} else {
+		response := pb.AcceptJoiningResponse{
+			Result: "Join request accepted",
+		}
+		return &response, nil
+	}
 }
 
 func (s *ConferenceServer) DeclineJoining(ctx context.Context, req *pb.DeclineJoiningRequest) (*pb.DeclineJoiningResponse, error) {
@@ -68,11 +136,56 @@ func (s *ConferenceServer) DeclineJoining(ctx context.Context, req *pb.DeclineJo
 }
 
 func (s *ConferenceServer) RemoveParticipant(ctx context.Context, req *pb.RemoveParticipantRequest) (*pb.RemoveParticipantResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	if req.Block == true {
+		if err := s.Repo.BlockParticipant(conferenceID, userID); err != nil {
+			log.Fatal(err, ctx.Value("traceID"))
+			return nil, err
+		}
+	}
+	if err = s.Repo.RemoveParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
 	response := pb.RemoveParticipantResponse{
 		Result: "participant removed",
 	}
 	return &response, nil
 }
+
+func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveConferenceRequest) (*pb.LeaveConferenceResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	participantInput := utility.ConferenceParticipants{
+		UserID:       userID,
+		ConferenceID: uint(conferenceID),
+		ExitTime:     time.Now(),
+	}
+	if err = s.Repo.UpdateParticipantExitTime(participantInput); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	if err = s.Repo.RemoveParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	response := pb.LeaveConferenceResponse{
+		Result: "Participant mic toggled",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConferenceRequest) (*pb.EndConferenceResponse, error) {
+	err = s.Repo.RemoveRoom(req.ConferenceID)
+
+	response := pb.EndConferenceResponse{
+		Result: "Conference ended",
+	}
+	return &response, nil
+}
+
+// not implimented
 
 func (s *ConferenceServer) ToggleCamera(ctx context.Context, req *pb.ToggleCameraRequest) (*pb.ToggleCameraResponse, error) {
 	response := pb.ToggleCameraResponse{
@@ -100,15 +213,4 @@ func (s *ConferenceServer) ToggleParticipantMic(ctx context.Context, req *pb.Tog
 		Result: "Participant mic toggled",
 	}
 	return &response, nil
-}
-
-func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConferenceRequest) (*pb.EndConferenceResponse, error) {
-	response := pb.EndConferenceResponse{
-		Result: "Conference ended",
-	}
-	return &response, nil
-}
-
-func (s *ConferenceServer) mustEmbedUnimplementedConferenceServer() {
-
 }

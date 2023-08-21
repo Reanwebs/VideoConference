@@ -10,6 +10,7 @@ service Conference{
   rpc JoinConference (JoinConferenceRequest) returns (JoinConferenceResponse){}
   rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
   rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
+  rpc LeaveConference(LeaveConferenceRequest)returns (LeaveConferenceResponse){}
   rpc RemoveParticipant (RemoveParticipantRequest) returns (RemoveParticipantResponse){}
   rpc ToggleCamera (ToggleCameraRequest) returns (ToggleCameraResponse){}
   rpc ToggleMic (ToggleMicRequest) returns (ToggleMicResponse){}
@@ -64,7 +65,7 @@ message JoinConferenceResponse {
 
  message AcceptJoiningRequest {
    string userID = 1;
-   string conferenceID = 2;
+   int32 conferenceID = 2;
 }
 
 message AcceptJoiningResponse {
@@ -74,7 +75,7 @@ message AcceptJoiningResponse {
 // Decline Joining
 message DeclineJoiningRequest {
    string userID = 1;
-   string conferenceID = 2;
+   int32 conferenceID = 2;
 }
 
 message DeclineJoiningResponse {
@@ -85,7 +86,7 @@ message DeclineJoiningResponse {
 
 message RemoveParticipantRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
     bool   block        = 3;
 }
 
@@ -98,7 +99,7 @@ message RemoveParticipantResponse {
 
 message ToggleCameraRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 
@@ -110,7 +111,7 @@ message ToggleCameraResponse {
 
 message ToggleMicRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 message ToggleMicResponse {
@@ -121,7 +122,7 @@ message ToggleMicResponse {
 
 message ToggleParticipantCameraRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 message ToggleParticipantCameraResponse {
@@ -133,7 +134,7 @@ message ToggleParticipantCameraResponse {
 
 message ToggleParticipantMicRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 message ToggleParticipantMicResponse {
@@ -144,7 +145,7 @@ message ToggleParticipantMicResponse {
 
 message LeaveConferenceRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 message LeaveConferenceResponse {
@@ -156,7 +157,7 @@ message LeaveConferenceResponse {
 
 message EndConferenceRequest {
     string userID = 1;
-    string conferenceID = 2;
+    int32 conferenceID = 2;
 }
 
 message EndConferenceResponse {

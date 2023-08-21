@@ -24,6 +24,7 @@ const (
 	Conference_JoinConference_FullMethodName          = "/pb.Conference/JoinConference"
 	Conference_AcceptJoining_FullMethodName           = "/pb.Conference/AcceptJoining"
 	Conference_DeclineJoining_FullMethodName          = "/pb.Conference/DeclineJoining"
+	Conference_LeaveConference_FullMethodName         = "/pb.Conference/LeaveConference"
 	Conference_RemoveParticipant_FullMethodName       = "/pb.Conference/RemoveParticipant"
 	Conference_ToggleCamera_FullMethodName            = "/pb.Conference/ToggleCamera"
 	Conference_ToggleMic_FullMethodName               = "/pb.Conference/ToggleMic"
@@ -41,6 +42,7 @@ type ConferenceClient interface {
 	JoinConference(ctx context.Context, in *JoinConferenceRequest, opts ...grpc.CallOption) (*JoinConferenceResponse, error)
 	AcceptJoining(ctx context.Context, in *AcceptJoiningRequest, opts ...grpc.CallOption) (*AcceptJoiningResponse, error)
 	DeclineJoining(ctx context.Context, in *DeclineJoiningRequest, opts ...grpc.CallOption) (*DeclineJoiningResponse, error)
+	LeaveConference(ctx context.Context, in *LeaveConferenceRequest, opts ...grpc.CallOption) (*LeaveConferenceResponse, error)
 	RemoveParticipant(ctx context.Context, in *RemoveParticipantRequest, opts ...grpc.CallOption) (*RemoveParticipantResponse, error)
 	ToggleCamera(ctx context.Context, in *ToggleCameraRequest, opts ...grpc.CallOption) (*ToggleCameraResponse, error)
 	ToggleMic(ctx context.Context, in *ToggleMicRequest, opts ...grpc.CallOption) (*ToggleMicResponse, error)
@@ -96,6 +98,15 @@ func (c *conferenceClient) AcceptJoining(ctx context.Context, in *AcceptJoiningR
 func (c *conferenceClient) DeclineJoining(ctx context.Context, in *DeclineJoiningRequest, opts ...grpc.CallOption) (*DeclineJoiningResponse, error) {
 	out := new(DeclineJoiningResponse)
 	err := c.cc.Invoke(ctx, Conference_DeclineJoining_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) LeaveConference(ctx context.Context, in *LeaveConferenceRequest, opts ...grpc.CallOption) (*LeaveConferenceResponse, error) {
+	out := new(LeaveConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_LeaveConference_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -165,6 +176,7 @@ type ConferenceServer interface {
 	JoinConference(context.Context, *JoinConferenceRequest) (*JoinConferenceResponse, error)
 	AcceptJoining(context.Context, *AcceptJoiningRequest) (*AcceptJoiningResponse, error)
 	DeclineJoining(context.Context, *DeclineJoiningRequest) (*DeclineJoiningResponse, error)
+	LeaveConference(context.Context, *LeaveConferenceRequest) (*LeaveConferenceResponse, error)
 	RemoveParticipant(context.Context, *RemoveParticipantRequest) (*RemoveParticipantResponse, error)
 	ToggleCamera(context.Context, *ToggleCameraRequest) (*ToggleCameraResponse, error)
 	ToggleMic(context.Context, *ToggleMicRequest) (*ToggleMicResponse, error)
@@ -192,6 +204,9 @@ func (UnimplementedConferenceServer) AcceptJoining(context.Context, *AcceptJoini
 }
 func (UnimplementedConferenceServer) DeclineJoining(context.Context, *DeclineJoiningRequest) (*DeclineJoiningResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeclineJoining not implemented")
+}
+func (UnimplementedConferenceServer) LeaveConference(context.Context, *LeaveConferenceRequest) (*LeaveConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveConference not implemented")
 }
 func (UnimplementedConferenceServer) RemoveParticipant(context.Context, *RemoveParticipantRequest) (*RemoveParticipantResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveParticipant not implemented")
@@ -310,6 +325,24 @@ func _Conference_DeclineJoining_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConferenceServer).DeclineJoining(ctx, req.(*DeclineJoiningRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_LeaveConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaveConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).LeaveConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_LeaveConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).LeaveConference(ctx, req.(*LeaveConferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -448,6 +481,10 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeclineJoining",
 			Handler:    _Conference_DeclineJoining_Handler,
+		},
+		{
+			MethodName: "LeaveConference",
+			Handler:    _Conference_LeaveConference_Handler,
 		},
 		{
 			MethodName: "RemoveParticipant",
