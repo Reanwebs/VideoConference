@@ -20,13 +20,14 @@ func NewConferenceRepo(db *gorm.DB) *conferenceRepo {
 
 func (c *conferenceRepo) CreateRoom(input utility.ConferenceRoom) (uint, error) {
 	query := `
-        INSERT INTO conference_rooms (user_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO conference_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING id`
 
 	var id uint
 	err := c.DB.Raw(query,
 		input.UserID,
+		input.ConferenceID,
 		input.Type,
 		input.Title,
 		input.Description,
@@ -42,11 +43,10 @@ func (c *conferenceRepo) CreateRoom(input utility.ConferenceRoom) (uint, error) 
 	if err != nil {
 		return 0, err
 	}
-
 	return id, nil
 }
 
-func (c *conferenceRepo) CheckLimit(conferenceID int32) (uint, error) {
+func (c *conferenceRepo) CheckLimit(conferenceID string) (uint, error) {
 	query := `
         SELECT participantlimit
         FROM conference_rooms
@@ -61,7 +61,7 @@ func (c *conferenceRepo) CheckLimit(conferenceID int32) (uint, error) {
 	return participantLimit, nil
 }
 
-func (c *conferenceRepo) CountParticipants(conferenceID int32) (uint, error) {
+func (c *conferenceRepo) CountParticipants(conferenceID string) (uint, error) {
 	query := `
         SELECT COUNT(*)
         FROM conference_participants
@@ -76,7 +76,7 @@ func (c *conferenceRepo) CountParticipants(conferenceID int32) (uint, error) {
 	return participantCount, nil
 }
 
-func (c *conferenceRepo) CheckParticipantPermission(conferenceID int32, userID string) (bool, error) {
+func (c *conferenceRepo) CheckParticipantPermission(conferenceID string, userID string) (bool, error) {
 	query := `
         SELECT permission
         FROM conference_participants
@@ -115,7 +115,7 @@ func (c *conferenceRepo) AddParticipant(input utility.ConferenceParticipants) er
 
 }
 
-func (c *conferenceRepo) BlockParticipant(conferenceID int32, userID string) error {
+func (c *conferenceRepo) BlockParticipant(conferenceID string, userID string) error {
 	query := `
         UPDATE conference_participants
         SET permission = false
@@ -143,7 +143,7 @@ func (c *conferenceRepo) UpdateParticipantExitTime(input utility.ConferenceParti
 	}
 }
 
-func (c *conferenceRepo) RemoveParticipant(conferenceID int32, userID string) error {
+func (c *conferenceRepo) RemoveParticipant(conferenceID string, userID string) error {
 	query := `
         DELETE FROM conference_participants
         WHERE conference_id = ? AND user_id = ?`
@@ -156,7 +156,7 @@ func (c *conferenceRepo) RemoveParticipant(conferenceID int32, userID string) er
 	}
 }
 
-func (c *conferenceRepo) CheckType(conferenceID int32) (string, error) {
+func (c *conferenceRepo) CheckType(conferenceID string) (string, error) {
 	query := `
         SELECT type
         FROM conference_rooms
@@ -171,7 +171,7 @@ func (c *conferenceRepo) CheckType(conferenceID int32) (string, error) {
 	return conferenceType, nil
 }
 
-func (c *conferenceRepo) CheckInterest(conferenceID int32) (string, error) {
+func (c *conferenceRepo) CheckInterest(conferenceID string) (string, error) {
 	query := `
         SELECT interest
         FROM conference_rooms
@@ -186,7 +186,7 @@ func (c *conferenceRepo) CheckInterest(conferenceID int32) (string, error) {
 	return interest, nil
 }
 
-func (c *conferenceRepo) RemoveRoom(conferenceID int32) error {
+func (c *conferenceRepo) RemoveRoom(conferenceID string) error {
 	query := `
         DELETE FROM conference_rooms
         WHERE id = ?`

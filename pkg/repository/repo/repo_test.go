@@ -29,6 +29,7 @@ func Test_CreateRoom(t *testing.T) {
 			args: args{
 				input: utility.ConferenceRoom{
 					UserID:           "yourUserID",
+					ConferenceID:     "conferenceUID",
 					Type:             "conferenceType",
 					Title:            "Conference Title",
 					Description:      "Conference Description",
@@ -41,7 +42,7 @@ func Test_CreateRoom(t *testing.T) {
 			stub: func(mockSQL sqlmock.Sqlmock) {
 
 				expectedQuery := `^INSERT INTO conference_rooms(.+)$`
-				mockSQL.ExpectQuery(expectedQuery).WithArgs("yourUserID", "conferenceType", "Conference Title", "Conference Description", "Conference Interest", true, true, true, 100, time.Time{}, time.Time{}).
+				mockSQL.ExpectQuery(expectedQuery).WithArgs("yourUserID", "conferenceUID", "conferenceType", "Conference Title", "Conference Description", "Conference Interest", true, true, true, 100, time.Time{}, time.Time{}).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 			},
@@ -76,7 +77,7 @@ func Test_CreateRoom(t *testing.T) {
 
 func Test_CheckLimit(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 
 	tests := []struct {
 		name    string
@@ -119,7 +120,7 @@ func Test_CheckLimit(t *testing.T) {
 }
 
 func Test_CountParticipants(t *testing.T) {
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 
 	tests := []struct {
 		name    string
@@ -160,7 +161,7 @@ func Test_CountParticipants(t *testing.T) {
 }
 
 func Test_CheckParticipantPermission(t *testing.T) {
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 	userID := "user102"
 	tests := []struct {
 		name    string
@@ -204,7 +205,7 @@ func Test_AddParticipant(t *testing.T) {
 
 	participantInput := utility.ConferenceParticipants{
 		UserID:       "yourUserID",
-		ConferenceID: 1,
+		ConferenceID: "conf102",
 		CamStatus:    "on",
 		MicStatus:    "off",
 		JoinTime:     time.Now(),
@@ -222,7 +223,7 @@ func Test_AddParticipant(t *testing.T) {
 			stub: func(mockSQL sqlmock.Sqlmock) {
 				expectedQuery := `^INSERT INTO conference_participants(.+)$`
 				mockSQL.ExpectExec(expectedQuery).
-					WithArgs("yourUserID", 1, "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs("yourUserID", "conf102", "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			wantErr: nil,
@@ -252,7 +253,7 @@ func Test_AddParticipant(t *testing.T) {
 
 func Test_BlockParticipant(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf202"
 	userID := "UserID"
 
 	tests := []struct {
@@ -297,7 +298,7 @@ func Test_UpdateParticipantExitTime(t *testing.T) {
 
 	participantInput := utility.ConferenceParticipants{
 		UserID:       "yourUserID",
-		ConferenceID: 1,
+		ConferenceID: "conf122",
 		ExitTime:     time.Now(),
 	}
 
@@ -341,7 +342,7 @@ func Test_UpdateParticipantExitTime(t *testing.T) {
 
 func Test_RemoveParticipant(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 	userID := "UserID"
 
 	tests := []struct {
@@ -384,7 +385,7 @@ func Test_RemoveParticipant(t *testing.T) {
 
 func Test_CheckType(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf111"
 	conferenceType := "private"
 
 	tests := []struct {
@@ -430,7 +431,7 @@ func Test_CheckType(t *testing.T) {
 
 func Test_CheckInterest(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 	interest := "Conference Interest"
 
 	tests := []struct {
@@ -476,7 +477,7 @@ func Test_CheckInterest(t *testing.T) {
 
 func Test_RemoveRoom(t *testing.T) {
 
-	conferenceID := int32(1)
+	conferenceID := "conf102"
 
 	tests := []struct {
 		name    string
