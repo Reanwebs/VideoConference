@@ -223,7 +223,7 @@ func Test_AddParticipant(t *testing.T) {
 			stub: func(mockSQL sqlmock.Sqlmock) {
 				expectedQuery := `^INSERT INTO conference_participants(.+)$`
 				mockSQL.ExpectExec(expectedQuery).
-					WithArgs("yourUserID", 1, "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs("yourUserID", "conf102", "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			wantErr: nil,
