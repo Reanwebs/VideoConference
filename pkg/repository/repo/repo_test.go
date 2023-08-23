@@ -88,7 +88,7 @@ func Test_CheckLimit(t *testing.T) {
 		{
 			name: "participant limit retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT participantlimit FROM conference_rooms WHERE id = ?`
+				expectedQuery := `^SELECT participantlimit FROM conference_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"participantlimit"}).AddRow(100))
 			},
