@@ -41,14 +41,16 @@ func (s *ConferenceServer) HealthCheck(ctx context.Context, req *pb.Request) (*p
 func (s *ConferenceServer) StartConference(ctx context.Context, req *pb.StartConferenceRequest) (*pb.StartConferenceResponse, error) {
 	var input utility.ConferenceRoom
 	copier.Copy(&input, req)
-	conferenceID, err := s.Repo.CreateRoom(input)
+	uid := utility.UID(8)
+	input.ConferenceID = uid
+	_, err := s.Repo.CreateRoom(input)
 	if err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
 	participantInput := utility.ConferenceParticipants{
 		UserID:       req.UserID,
-		ConferenceID: uint(conferenceID),
+		ConferenceID: input.ConferenceID,
 		Permission:   true,
 		CamStatus:    "active",
 		MicStatus:    "active",
@@ -60,8 +62,9 @@ func (s *ConferenceServer) StartConference(ctx context.Context, req *pb.StartCon
 		return nil, err
 	}
 	response := pb.StartConferenceResponse{
-		ConferenceID: int32(conferenceID),
+		ConferenceID: input.ConferenceID,
 	}
+	log.Println("conference room created")
 	return &response, nil
 }
 
@@ -108,7 +111,7 @@ func (s *ConferenceServer) AcceptJoining(ctx context.Context, req *pb.AcceptJoin
 	conferenceID := req.ConferenceID
 	participantInput := utility.ConferenceParticipants{
 		UserID:       userID,
-		ConferenceID: uint(conferenceID),
+		ConferenceID: conferenceID,
 		Permission:   true,
 		CamStatus:    "active",
 		MicStatus:    "active",
@@ -159,7 +162,7 @@ func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveCon
 	conferenceID := req.ConferenceID
 	participantInput := utility.ConferenceParticipants{
 		UserID:       userID,
-		ConferenceID: uint(conferenceID),
+		ConferenceID: conferenceID,
 		ExitTime:     time.Now(),
 	}
 	if err = s.Repo.UpdateParticipantExitTime(participantInput); err != nil {

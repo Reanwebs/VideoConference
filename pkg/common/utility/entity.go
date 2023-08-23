@@ -9,6 +9,7 @@ import (
 type ConferenceRoom struct {
 	gorm.Model
 	UserID           string
+	ConferenceID     string
 	Type             string
 	Title            string
 	Description      string
@@ -25,7 +26,7 @@ type ConferenceRoom struct {
 type ConferenceParticipants struct {
 	gorm.Model
 	UserID       string
-	ConferenceID uint
+	ConferenceID string
 	Permission   bool
 	CamStatus    string
 	MicStatus    string
