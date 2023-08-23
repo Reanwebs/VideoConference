@@ -397,7 +397,7 @@ func Test_CheckType(t *testing.T) {
 		{
 			name: "conference type retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT type FROM conference_rooms WHERE id = ?`
+				expectedQuery := `^SELECT type FROM conference_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"type"}).AddRow(conferenceType))
@@ -443,7 +443,7 @@ func Test_CheckInterest(t *testing.T) {
 		{
 			name: "interest retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT interest FROM conference_rooms WHERE id = ?`
+				expectedQuery := `^SELECT interest FROM conference_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"interest"}).AddRow(interest))
@@ -487,7 +487,7 @@ func Test_RemoveRoom(t *testing.T) {
 		{
 			name: "room removed",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^DELETE FROM conference_rooms WHERE id = ?`
+				expectedQuery := `^DELETE FROM conference_rooms WHERE conference_id = ?`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnResult(sqlmock.NewResult(0, 1))
