@@ -74,17 +74,17 @@ func (s *ConferenceServer) JoinConference(ctx context.Context, req *pb.JoinConfe
 	response := pb.JoinConferenceResponse{}
 	participantLimit, err := s.Repo.CheckLimit(conferenceID)
 	if err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
+		log.Fatal("checklimit", err, ctx.Value("traceID"))
 		return nil, err
 	}
 	currentParticipants, err := s.Repo.CountParticipants(conferenceID)
 	if err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
+		log.Fatal("countparticipant", err, ctx.Value("traceID"))
 		return nil, err
 	}
 	permission, err := s.Repo.CheckParticipantPermission(conferenceID, userID)
 	if err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
+		log.Fatal("checkpermission", err, ctx.Value("traceID"))
 		return nil, err
 	}
 	if permission == false {
@@ -174,14 +174,16 @@ func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveCon
 		return nil, err
 	}
 	response := pb.LeaveConferenceResponse{
-		Result: "Participant mic toggled",
+		Result: "Exited from the conference",
 	}
 	return &response, nil
 }
 
 func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConferenceRequest) (*pb.EndConferenceResponse, error) {
 	err = s.Repo.RemoveRoom(req.ConferenceID)
-
+	if err != nil {
+		return nil, err
+	}
 	response := pb.EndConferenceResponse{
 		Result: "Conference ended",
 	}

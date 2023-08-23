@@ -2,6 +2,8 @@ package repo
 
 import (
 	"conference/pkg/common/utility"
+	"database/sql"
+	"errors"
 	"fmt"
 	"time"
 
@@ -50,7 +52,7 @@ func (c *conferenceRepo) CheckLimit(conferenceID string) (uint, error) {
 	query := `
         SELECT participantlimit
         FROM conference_rooms
-        WHERE id = ?`
+        WHERE conference_id = ?`
 
 	var participantLimit uint
 	err := c.DB.Raw(query, conferenceID).Row().Scan(&participantLimit)
@@ -85,9 +87,12 @@ func (c *conferenceRepo) CheckParticipantPermission(conferenceID string, userID 
 	var permission bool
 	err := c.DB.Raw(query, conferenceID, userID).Row().Scan(&permission)
 	if err != nil {
-		return false, err
+		if errors.Is(err, sql.ErrNoRows) {
+			return true, nil
+		} else {
+			return false, err
+		}
 	}
-
 	return permission, nil
 }
 
@@ -160,7 +165,7 @@ func (c *conferenceRepo) CheckType(conferenceID string) (string, error) {
 	query := `
         SELECT type
         FROM conference_rooms
-        WHERE id = ?`
+        WHERE conference_id = ?`
 
 	var conferenceType string
 	err := c.DB.Raw(query, conferenceID).Row().Scan(&conferenceType)
@@ -175,7 +180,7 @@ func (c *conferenceRepo) CheckInterest(conferenceID string) (string, error) {
 	query := `
         SELECT interest
         FROM conference_rooms
-        WHERE id = ?`
+        WHERE conference_id = ?`
 
 	var interest string
 	err := c.DB.Raw(query, conferenceID).Row().Scan(&interest)
@@ -189,7 +194,7 @@ func (c *conferenceRepo) CheckInterest(conferenceID string) (string, error) {
 func (c *conferenceRepo) RemoveRoom(conferenceID string) error {
 	query := `
         DELETE FROM conference_rooms
-        WHERE id = ?`
+        WHERE conference_id = ?`
 
 	result := c.DB.Exec(query, conferenceID)
 	if result.Error != nil {
