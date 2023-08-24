@@ -1,14 +1,18 @@
 syntax = "proto3";
 
-option go_package = "/pb";
+option go_package = "/pb/conference";
 
-package pb;
+package conference;
 
 service Conference{
   rpc HealthCheck(Request) returns (Response);
-  rpc ScheduleConference(ScheduleConferenceRequest) returns (ScheduleConferenceResponse)
-  rpc StartConference (StartConferenceRequest) returns (StartConferenceResponse){}
-  rpc JoinConference (JoinConferenceRequest) returns (JoinConferenceResponse){}
+  rpc ScheduleConference(ScheduleConferenceRequest) returns (ScheduleConferenceResponse){}
+  rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
+  rpc StartGroupConference (StartGroupConferenceRequest) returns (StartGroupConferenceResponse){}
+  rpc StartPublicConference (StartPublicConferenceRequest) returns (StartPublicConferenceResponse){}
+  rpc JoinPrivateConference (JoinPrivateConferenceRequest) returns (JoinPrivateConferenceResponse){}
+  rpc JoinGroupConfernce (JoinGroupConferenceRequest) returns (JoinGroupConferenceResponse){}
+  rpc JoinPublicConference (JoinPublicConferenceRequest) returns (JoinPublicConferenceResponse){}
   rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
   rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
   rpc LeaveConference(LeaveConferenceRequest)returns (LeaveConferenceResponse){}
@@ -39,16 +43,21 @@ message ScheduleConferenceRequest {
     bool   chat        = 7;
     bool   broadcast   = 8;
     int32  participantlimit = 9;
-    timestamp date          = 10;
-    timestamp time          = 11;
+    string date          = 10;
+    int64  time_seconds = 11;
+    int32  time_nanos = 12;
  }
 
 
+message ScheduleConferenceResponse{
+    string Result = 1;
+    string ConferenceID = 2;
+}
+
 // Start Conference
 
-message StartConferenceRequest {
+message StartPrivateConferenceRequest {
     string userID  = 1;
-    string type    = 2;
     string title   = 3;
     string description = 4;
     string interest    = 5;
@@ -58,29 +67,84 @@ message StartConferenceRequest {
     int32  participantlimit = 9;
  }
 
-message StartConferenceResponse {
-   string link = 1;
-   string offer= 2;
-   string  conferenceID = 3;
+message StartPrivateConferenceResponse {
+   string  Result = 1;
+   string  conferenceID = 2;
 
  }
 
+
+ message StartGroupConferenceRequest{
+    string userID  = 1;
+    string groupID = 2;
+    string title   = 3;
+    string description = 4;
+    string interest    = 5;
+    bool   recording   = 6;
+    bool   chat        = 7;
+    bool   broadcast   = 8;
+    int32  participantlimit = 9;
+ }
+
+ message StartGroupConferenceResponse{
+    string Result = 1;
+    string ConferenceID = 2;
+ }
+
+message StartPublicConferenceRequest{
+    string userID  = 1;
+    string title   = 3;
+    string description = 4;
+    string interest    = 5;
+    string joinType    = 6;
+    bool   recording   = 7;
+    bool   chat        = 8;
+    bool   broadcast   = 9;
+    int32  participantlimit = 10;
+}
+
+message StartPublicConferenceResponse{
+    string Result = 1;
+    string ConferenceID = 2;
+}
+
 //  Join Conference
 
- message JoinConferenceRequest {
+ message JoinPrivateConferenceRequest {
    string userID       = 1;
    string  conferenceID = 2;
  }
 
-message JoinConferenceResponse {
+message JoinPrivateConferenceResponse {
    string result = 1;
  }
+
+message JoinGroupConferenceRequest{
+   string userID       = 1;
+   string groupID      = 2;
+   string  conferenceID = 3;
+}
+
+message JoinGroupConferenceResponse {
+   string result = 1;
+ }
+
+message JoinPublicConferenceRequest{
+   string userID       = 1;
+   string  conferenceID = 2;
+}
+
+message JoinPublicConferenceResponse{
+    string result = 1;
+}
+
 
 //  AcceptJoinRequest
 
  message AcceptJoiningRequest {
    string userID = 1;
-   string conferenceID = 2;
+   string hostID = 2;
+   string conferenceID = 3;
 }
 
 message AcceptJoiningResponse {
@@ -101,8 +165,9 @@ message DeclineJoiningResponse {
 
 message RemoveParticipantRequest {
     string userID = 1;
-    string conferenceID = 2;
-    bool   block        = 3;
+    string hostID = 2;
+    string conferenceID = 3;
+    bool   block        = 4;
 }
 
 message RemoveParticipantResponse {

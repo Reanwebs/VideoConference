@@ -1,7 +1,7 @@
 package service
 
 import (
-	"conference/pb"
+	pb "conference/pb/conference"
 	"conference/pkg/common/config"
 	"log"
 	"net"
@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type Server struct {
+type Service struct {
 	GrpcServer   *grpc.Server
 	PortListener net.Listener
 }
