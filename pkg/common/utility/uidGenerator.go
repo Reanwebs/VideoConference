@@ -1,12 +1,13 @@
 package utility
 
 import (
+	"errors"
 	"math/rand"
 	"strconv"
 	"time"
 )
 
-func UID(length int) string {
+func UID(length int) (string, error) {
 	if length <= 0 {
 		panic("UUID length must be greater than 0")
 	}
@@ -14,7 +15,11 @@ func UID(length int) string {
 	maxValue := intPow(10, length) - 1
 	uid := strconv.Itoa(rand.Intn(maxValue + 1))
 	ustr := generateRandomString(10)
-	return ustr + uid
+	if ustr != "" && uid != "" {
+		return ustr + uid, nil
+	} else {
+		return "", errors.New("UID generation failed")
+	}
 
 }
 

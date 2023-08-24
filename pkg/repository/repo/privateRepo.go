@@ -20,7 +20,7 @@ func NewConferenceRepo(db *gorm.DB) *conferenceRepo {
 	}
 }
 
-func (c *conferenceRepo) CreateRoom(input utility.ConferenceRoom) (uint, error) {
+func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
 	query := `
         INSERT INTO conference_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -96,7 +96,7 @@ func (c *conferenceRepo) CheckParticipantPermission(conferenceID string, userID 
 	return permission, nil
 }
 
-func (c *conferenceRepo) AddParticipant(input utility.ConferenceParticipants) error {
+func (c *conferenceRepo) AddParticipantInPrivateRoom(input utility.PrivateRoomParticipants) error {
 	query := `
         INSERT INTO conference_participants (user_id, conference_id, cam_status, mic_status, join_time, exit_time, role, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
@@ -134,7 +134,7 @@ func (c *conferenceRepo) BlockParticipant(conferenceID string, userID string) er
 	}
 }
 
-func (c *conferenceRepo) UpdateParticipantExitTime(input utility.ConferenceParticipants) error {
+func (c *conferenceRepo) UpdateParticipantExitTime(input utility.PrivateRoomParticipants) error {
 	query := `
         UPDATE conference_participants
         SET exit_time = ?

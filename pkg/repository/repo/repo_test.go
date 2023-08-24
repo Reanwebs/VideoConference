@@ -14,7 +14,7 @@ import (
 func Test_CreateRoom(t *testing.T) {
 
 	type args struct {
-		input utility.ConferenceRoom
+		input utility.PrivateRoom
 	}
 
 	tests := []struct {
@@ -27,7 +27,7 @@ func Test_CreateRoom(t *testing.T) {
 		{
 			name: "conference room created",
 			args: args{
-				input: utility.ConferenceRoom{
+				input: utility.PrivateRoom{
 					UserID:           "yourUserID",
 					ConferenceID:     "conferenceUID",
 					Type:             "conferenceType",
@@ -66,7 +66,7 @@ func Test_CreateRoom(t *testing.T) {
 
 			repo := NewConferenceRepo(gormDB)
 
-			got, err := repo.CreateRoom(tt.args.input)
+			got, err := repo.CreatePrivateRoom(tt.args.input)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -203,7 +203,7 @@ func Test_CheckParticipantPermission(t *testing.T) {
 
 func Test_AddParticipant(t *testing.T) {
 
-	participantInput := utility.ConferenceParticipants{
+	participantInput := utility.PrivateRoomParticipants{
 		UserID:       "yourUserID",
 		ConferenceID: "conf102",
 		CamStatus:    "on",
@@ -244,7 +244,7 @@ func Test_AddParticipant(t *testing.T) {
 
 			repo := NewConferenceRepo(gormDB)
 
-			err := repo.AddParticipant(participantInput)
+			err := repo.AddParticipantInPrivateRoom(participantInput)
 
 			assert.Equal(t, tt.wantErr, err)
 		})
@@ -296,7 +296,7 @@ func Test_BlockParticipant(t *testing.T) {
 
 func Test_UpdateParticipantExitTime(t *testing.T) {
 
-	participantInput := utility.ConferenceParticipants{
+	participantInput := utility.PrivateRoomParticipants{
 		UserID:       "yourUserID",
 		ConferenceID: "conf122",
 		ExitTime:     time.Now(),
