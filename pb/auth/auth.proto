@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+option go_package = "/pb/auth";
+
+package auth;
+
+service Auth{
+  rpc HealthCheck(Request) returns (Response);
+  rpc GroupHostPermission(GroupHostPermissionRequest) returns (GroupHostPermissionResponse){}
+  rpc GroupParticipantPermission(GroupParticipantPermissionRequest) returns (GroupParticipantPermissionResponse){}
+  rpc PublicHostPermission(PublicHostPermissionRequest) returns (PublicHostPermissionResponse){}
+  rpc PublicParticipantPermission(PublicParticipantPermissionRequest) returns (PublicParticipantPermissionResponse){}
+}
+
+message Request {
+  string data = 1;
+}
+
+message Response {
+  string result = 1;
+}
+
+message GroupHostPermissionRequest{
+
+}
+
+message GroupHostPermissionResponse{
+
+}
+
+message GroupParticipantPermissionRequest{
+
+}
+
+message GroupParticipantPermissionResponse{
+
+}
+
+message PublicHostPermissionRequest{
+
+}
+
+message PublicHostPermissionResponse{
+
+}
+
+message PublicParticipantPermissionRequest{
+
+}
+
+message PublicParticipantPermissionResponse{
+    
+}

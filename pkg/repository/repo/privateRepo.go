@@ -14,7 +14,7 @@ type conferenceRepo struct {
 	DB *gorm.DB
 }
 
-func NewConferenceRepo(db *gorm.DB) *conferenceRepo {
+func NewPrivateConferenceRepo(db *gorm.DB) *conferenceRepo {
 	return &conferenceRepo{
 		DB: db,
 	}

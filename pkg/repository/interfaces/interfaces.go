@@ -17,7 +17,11 @@ type PrivateRepo interface {
 }
 
 type GroupRepo interface {
+	CreateGroupRoom(utility.GroupRoom) error
+	AddParticipantInGroupRoom(utility.GroupRoomParticipants) error
 }
 
 type PublicRepo interface {
+	CreatePublicRoom(utility.PublicRoom) error
+	AddParticipantInPublicRoom(utility.PublicRoomParticipants) error
 }

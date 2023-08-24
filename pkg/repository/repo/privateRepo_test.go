@@ -64,7 +64,7 @@ func Test_CreateRoom(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CreatePrivateRoom(tt.args.input)
 
@@ -109,7 +109,7 @@ func Test_CheckLimit(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CheckLimit(conferenceID)
 
@@ -150,7 +150,7 @@ func Test_CountParticipants(t *testing.T) {
 			}), &gorm.Config{})
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CountParticipants(conferenceID)
 
@@ -191,7 +191,7 @@ func Test_CheckParticipantPermission(t *testing.T) {
 			}), &gorm.Config{})
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CheckParticipantPermission(conferenceID, userID)
 
@@ -242,7 +242,7 @@ func Test_AddParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			err := repo.AddParticipantInPrivateRoom(participantInput)
 
@@ -285,7 +285,7 @@ func Test_BlockParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			err := repo.BlockParticipant(conferenceID, userID)
 
@@ -331,7 +331,7 @@ func Test_UpdateParticipantExitTime(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			err := repo.UpdateParticipantExitTime(participantInput)
 
@@ -374,7 +374,7 @@ func Test_RemoveParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			err := repo.RemoveParticipant(conferenceID, userID)
 
@@ -419,7 +419,7 @@ func Test_CheckType(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CheckType(conferenceID)
 
@@ -465,7 +465,7 @@ func Test_CheckInterest(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			got, err := repo.CheckInterest(conferenceID)
 
@@ -508,7 +508,7 @@ func Test_RemoveRoom(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewConferenceRepo(gormDB)
+			repo := NewPrivateConferenceRepo(gormDB)
 
 			err := repo.RemoveRoom(conferenceID)
 			assert.Equal(t, tt.wantErr, err)

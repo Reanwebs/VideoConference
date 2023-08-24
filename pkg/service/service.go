@@ -1,7 +1,9 @@
 package service
 
 import (
-	"conference/pb"
+	authpb "conference/pb/auth"
+	pb "conference/pb/conference"
+	"conference/pkg/client/auth"
 	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
@@ -20,13 +22,15 @@ var (
 
 type ConferenceServer struct {
 	pb.UnimplementedConferenceServer
+	Client      auth.AuthClient
 	PrivateRepo interfaces.PrivateRepo
 	GroupRepo   interfaces.GroupRepo
 	PublicRepo  interfaces.PublicRepo
 }
 
-func NewConferenceServer(pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo) *ConferenceServer {
+func NewConferenceServer(client auth.AuthClient, pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo) *ConferenceServer {
 	return &ConferenceServer{
+		Client:      client,
 		PrivateRepo: pRepo,
 		GroupRepo:   gRepo,
 		PublicRepo:  puRepo,
@@ -51,7 +55,7 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 		return nil, err
 	}
 	input.ConferenceID = uid
-	_, err = s.Repo.CreatePrivateRoom(input)
+	_, err = s.PrivateRepo.CreatePrivateRoom(input)
 	if err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
@@ -65,7 +69,7 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 		JoinTime:     time.Now(),
 		Role:         "host",
 	}
-	if err = s.Repo.AddParticipantInPrivateRoom(participantInput); err != nil {
+	if err = s.PrivateRepo.AddParticipantInPrivateRoom(participantInput); err != nil {
 		log.Fatal(err, traceID)
 		return nil, err
 	}
@@ -79,20 +83,22 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.StartGroupConferenceRequest) (*pb.StartGroupConferenceResponse, error) {
 	traceID := ctx.Value("traceID")
 	var input utility.GroupRoom
-	permission, err := s.Client.GroupHostPermission(input.UserID)
-	if err != nil {
-		return nil, errors.New("error" + err + "traceID" + traceID)
-	}
-	if permission == false {
-		return nil, errors.New("error" + err + "traceID" + traceID)
-	}
 	copier.Copy(&input, req)
+	request := &authpb.GroupHostPermissionRequest{}
+	_, err := s.Client.GroupHostPermission(ctx, request)
+	if err != nil {
+		return nil, err
+	}
+	// if permission == false {
+	// 	return nil, err
+	// }
+
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
 	}
 	input.ConferenceID = uid
-	if err = s.Repo.CreateGroupRoom(input); err != nil {
+	if err = s.GroupRepo.CreateGroupRoom(input); err != nil {
 		return nil, err
 	}
 	participantInput := utility.GroupRoomParticipants{
@@ -105,7 +111,7 @@ func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.Sta
 		JoinTime:     time.Now(),
 		Role:         "host",
 	}
-	if err = s.Repo.AddParticipantInGroupRoom(participantInput); err != nil {
+	if err = s.GroupRepo.AddParticipantInGroupRoom(participantInput); err != nil {
 		log.Fatal(err, traceID)
 		return nil, err
 	}
@@ -117,22 +123,23 @@ func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.Sta
 }
 
 func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.StartPublicConferenceRequest) (*pb.StartPublicConferenceResponse, error) {
-	var input utility.PrivateRoom
+	var input utility.PublicRoom
 	traceID := ctx.Value("traceID")
-	permission, err := s.Client.PublicHostPermission(input.UserID)
+	request := &authpb.PublicHostPermissionRequest{}
+	_, err := s.Client.PublicHostPermission(ctx, request)
 	if err != nil {
-		return nil, errors.New("error" + err + "traceID" + traceID)
+		return nil, err
 	}
-	if permission == false {
-		return nil, errors.New("error" + err + "traceID" + traceID)
-	}
+	// if permission == false {
+	// 	return nil, err
+	// }
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
 	}
 	input.ConferenceID = uid
-	if err = s.Repo.CreatePublicRoom(input); err != nil {
+	if err = s.PublicRepo.CreatePublicRoom(input); err != nil {
 		return nil, err
 	}
 	participantInput := utility.PublicRoomParticipants{
@@ -144,7 +151,7 @@ func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.St
 		JoinTime:     time.Now(),
 		Role:         "host",
 	}
-	if err = s.Repo.AddParticipantInPublicRoom(participantInput); err != nil {
+	if err = s.PublicRepo.AddParticipantInPublicRoom(participantInput); err != nil {
 		log.Fatal(err, traceID)
 		return nil, err
 	}
@@ -159,17 +166,17 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 	conferenceID := req.ConferenceID
 	userID := req.UserID
 	response := pb.JoinPrivateConferenceResponse{}
-	participantLimit, err := s.Repo.CheckLimit(conferenceID)
+	participantLimit, err := s.PrivateRepo.CheckLimit(conferenceID)
 	if err != nil {
 		log.Fatal("checklimit", err, ctx.Value("traceID"))
 		return nil, err
 	}
-	currentParticipants, err := s.Repo.CountParticipants(conferenceID)
+	currentParticipants, err := s.PrivateRepo.CountParticipants(conferenceID)
 	if err != nil {
 		log.Fatal("countparticipant", err, ctx.Value("traceID"))
 		return nil, err
 	}
-	permission, err := s.Repo.CheckParticipantPermission(conferenceID, userID)
+	permission, err := s.PrivateRepo.CheckParticipantPermission(conferenceID, userID)
 	if err != nil {
 		log.Fatal("checkpermission", err, ctx.Value("traceID"))
 		return nil, err
@@ -213,7 +220,7 @@ func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.Join
 		JoinTime:     time.Now(),
 		Role:         input.Role,
 	}
-	if err = s.Repo.AddParticipantInGroupRoom(participantInput); err != nil {
+	if err = s.GroupRepo.AddParticipantInGroupRoom(participantInput); err != nil {
 		log.Fatal(err, traceID)
 		return nil, err
 	}
@@ -242,7 +249,7 @@ func (s *ConferenceServer) JoinPublicConference(ctx context.Context, req *pb.Joi
 		JoinTime:     time.Now(),
 		Role:         input.Role,
 	}
-	if err = s.Repo.AddParticipantInPublicRoom(participantInput); err != nil {
+	if err = s.PublicRepo.AddParticipantInPublicRoom(participantInput); err != nil {
 		log.Fatal(err, traceID)
 		return nil, err
 	}
@@ -265,7 +272,7 @@ func (s *ConferenceServer) AcceptJoining(ctx context.Context, req *pb.AcceptJoin
 		Role:         "user",
 	}
 
-	err = s.Repo.AddParticipantInPrivateRoom(participantInput)
+	err = s.PrivateRepo.AddParticipantInPrivateRoom(participantInput)
 	if err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
@@ -288,12 +295,12 @@ func (s *ConferenceServer) RemoveParticipant(ctx context.Context, req *pb.Remove
 	userID := req.UserID
 	conferenceID := req.ConferenceID
 	if req.Block == true {
-		if err := s.Repo.BlockParticipant(conferenceID, userID); err != nil {
+		if err := s.PrivateRepo.BlockParticipant(conferenceID, userID); err != nil {
 			log.Fatal(err, ctx.Value("traceID"))
 			return nil, err
 		}
 	}
-	if err = s.Repo.RemoveParticipant(conferenceID, userID); err != nil {
+	if err = s.PrivateRepo.RemoveParticipant(conferenceID, userID); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
@@ -311,11 +318,11 @@ func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveCon
 		ConferenceID: conferenceID,
 		ExitTime:     time.Now(),
 	}
-	if err = s.Repo.UpdateParticipantExitTime(participantInput); err != nil {
+	if err = s.PrivateRepo.UpdateParticipantExitTime(participantInput); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
-	if err = s.Repo.RemoveParticipant(conferenceID, userID); err != nil {
+	if err = s.PrivateRepo.RemoveParticipant(conferenceID, userID); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
@@ -326,7 +333,7 @@ func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveCon
 }
 
 func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConferenceRequest) (*pb.EndConferenceResponse, error) {
-	err = s.Repo.RemoveRoom(req.ConferenceID)
+	err = s.PrivateRepo.RemoveRoom(req.ConferenceID)
 	if err != nil {
 		return nil, err
 	}
