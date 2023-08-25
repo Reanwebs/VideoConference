@@ -22,7 +22,7 @@ func NewPrivateConferenceRepo(db *gorm.DB) *conferenceRepo {
 
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
 	query := `
-        INSERT INTO conference_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
+        INSERT INTO private_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING id`
 
@@ -48,10 +48,10 @@ func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, err
 	return id, nil
 }
 
-func (c *conferenceRepo) CheckLimit(conferenceID string) (uint, error) {
+func (c *conferenceRepo) CheckPrivateLimit(conferenceID string) (uint, error) {
 	query := `
         SELECT participantlimit
-        FROM conference_rooms
+        FROM private_rooms
         WHERE conference_id = ?`
 
 	var participantLimit uint
@@ -63,10 +63,10 @@ func (c *conferenceRepo) CheckLimit(conferenceID string) (uint, error) {
 	return participantLimit, nil
 }
 
-func (c *conferenceRepo) CountParticipants(conferenceID string) (uint, error) {
+func (c *conferenceRepo) CountPrivateParticipants(conferenceID string) (uint, error) {
 	query := `
         SELECT COUNT(*)
-        FROM conference_participants
+        FROM private_room_participants
         WHERE conference_id = ?`
 
 	var participantCount uint
@@ -78,10 +78,10 @@ func (c *conferenceRepo) CountParticipants(conferenceID string) (uint, error) {
 	return participantCount, nil
 }
 
-func (c *conferenceRepo) CheckParticipantPermission(conferenceID string, userID string) (bool, error) {
+func (c *conferenceRepo) CheckPrivateParticipantPermission(conferenceID string, userID string) (bool, error) {
 	query := `
         SELECT permission
-        FROM conference_participants
+        FROM private_room_participants
         WHERE conference_id = ? AND user_id = ?`
 
 	var permission bool
@@ -98,7 +98,7 @@ func (c *conferenceRepo) CheckParticipantPermission(conferenceID string, userID 
 
 func (c *conferenceRepo) AddParticipantInPrivateRoom(input utility.PrivateRoomParticipants) error {
 	query := `
-        INSERT INTO conference_participants (user_id, conference_id, cam_status, mic_status, join_time, exit_time, role, created_at, updated_at)
+        INSERT INTO private_room_participants (user_id, conference_id, cam_status, mic_status, join_time, exit_time, role, created_at, updated_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	result := c.DB.Exec(query,
@@ -120,9 +120,9 @@ func (c *conferenceRepo) AddParticipantInPrivateRoom(input utility.PrivateRoomPa
 
 }
 
-func (c *conferenceRepo) BlockParticipant(conferenceID string, userID string) error {
+func (c *conferenceRepo) BlockPrivateParticipant(conferenceID string, userID string) error {
 	query := `
-        UPDATE conference_participants
+        UPDATE private_room_participants
         SET permission = false
         WHERE conference_id = ? AND user_id = ?`
 
@@ -134,9 +134,9 @@ func (c *conferenceRepo) BlockParticipant(conferenceID string, userID string) er
 	}
 }
 
-func (c *conferenceRepo) UpdateParticipantExitTime(input utility.PrivateRoomParticipants) error {
+func (c *conferenceRepo) UpdatePrivateParticipantExitTime(input utility.PrivateRoomParticipants) error {
 	query := `
-        UPDATE conference_participants
+        UPDATE private_room_participants
         SET exit_time = ?
         WHERE user_id = ? AND conference_id = ?`
 
@@ -148,9 +148,9 @@ func (c *conferenceRepo) UpdateParticipantExitTime(input utility.PrivateRoomPart
 	}
 }
 
-func (c *conferenceRepo) RemoveParticipant(conferenceID string, userID string) error {
+func (c *conferenceRepo) RemovePrivateParticipant(conferenceID string, userID string) error {
 	query := `
-        DELETE FROM conference_participants
+        DELETE FROM private_room_participants
         WHERE conference_id = ? AND user_id = ?`
 
 	result := c.DB.Exec(query, conferenceID, userID)
@@ -164,7 +164,7 @@ func (c *conferenceRepo) RemoveParticipant(conferenceID string, userID string) e
 func (c *conferenceRepo) CheckType(conferenceID string) (string, error) {
 	query := `
         SELECT type
-        FROM conference_rooms
+        FROM private_rooms
         WHERE conference_id = ?`
 
 	var conferenceType string
@@ -176,10 +176,10 @@ func (c *conferenceRepo) CheckType(conferenceID string) (string, error) {
 	return conferenceType, nil
 }
 
-func (c *conferenceRepo) CheckInterest(conferenceID string) (string, error) {
+func (c *conferenceRepo) CheckPrivateInterest(conferenceID string) (string, error) {
 	query := `
         SELECT interest
-        FROM conference_rooms
+        FROM private_rooms
         WHERE conference_id = ?`
 
 	var interest string
@@ -191,9 +191,9 @@ func (c *conferenceRepo) CheckInterest(conferenceID string) (string, error) {
 	return interest, nil
 }
 
-func (c *conferenceRepo) RemoveRoom(conferenceID string) error {
+func (c *conferenceRepo) RemovePrivateRoom(conferenceID string) error {
 	query := `
-        DELETE FROM conference_rooms
+        DELETE FROM private_rooms
         WHERE conference_id = ?`
 
 	result := c.DB.Exec(query, conferenceID)

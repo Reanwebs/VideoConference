@@ -57,7 +57,7 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 	input.ConferenceID = uid
 	_, err = s.PrivateRepo.CreatePrivateRoom(input)
 	if err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
+
 		return nil, err
 	}
 	participantInput := utility.PrivateRoomParticipants{
@@ -166,19 +166,19 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 	conferenceID := req.ConferenceID
 	userID := req.UserID
 	response := pb.JoinPrivateConferenceResponse{}
-	participantLimit, err := s.PrivateRepo.CheckLimit(conferenceID)
+	participantLimit, err := s.PrivateRepo.CheckPrivateLimit(conferenceID)
 	if err != nil {
-		log.Fatal("checklimit", err, ctx.Value("traceID"))
+
 		return nil, err
 	}
-	currentParticipants, err := s.PrivateRepo.CountParticipants(conferenceID)
+	currentParticipants, err := s.PrivateRepo.CountPrivateParticipants(conferenceID)
 	if err != nil {
-		log.Fatal("countparticipant", err, ctx.Value("traceID"))
+
 		return nil, err
 	}
-	permission, err := s.PrivateRepo.CheckParticipantPermission(conferenceID, userID)
+	permission, err := s.PrivateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
 	if err != nil {
-		log.Fatal("checkpermission", err, ctx.Value("traceID"))
+
 		return nil, err
 	}
 	if permission == false {
@@ -211,6 +211,33 @@ func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.Join
 	if resp.Permission == false {
 		return nil, errors.New("user permission denied")
 	}
+	participantLimit, err := s.GroupRepo.CheckGroupLimit(req.ConferenceID)
+	if err != nil {
+		log.Fatal("checklimit", err, ctx.Value("traceID"))
+		return nil, err
+	}
+	currentParticipants, err := s.GroupRepo.CountGroupParticipants(req.ConferenceID)
+	if err != nil {
+		log.Fatal("countparticipant", err, ctx.Value("traceID"))
+		return nil, err
+	}
+	permission, err := s.GroupRepo.CheckGroupParticipantPermission(req.ConferenceID, req.UserID)
+	if err != nil {
+
+		return nil, err
+	}
+	if permission == false {
+		response := pb.JoinGroupConferenceResponse{
+			Result: "Participant permission denied",
+		}
+		return &response, errors.New("Participant permission denied")
+	}
+	if currentParticipants >= participantLimit {
+		response := pb.JoinGroupConferenceResponse{
+			Result: "Participant limit exceeded",
+		}
+		return &response, errors.New("Participant limit exceeded")
+	}
 	participantInput := utility.GroupRoomParticipants{
 		UserID:       req.UserID,
 		GroupID:      input.GroupID,
@@ -241,6 +268,31 @@ func (s *ConferenceServer) JoinPublicConference(ctx context.Context, req *pb.Joi
 	}
 	if resp.Permission == false {
 		return nil, errors.New("user permission denied")
+	}
+	participantLimit, err := s.PublicRepo.CheckPublicLimit(req.ConferenceID)
+	if err != nil {
+		return nil, err
+	}
+	currentParticipants, err := s.PublicRepo.CountPublicParticipants(req.ConferenceID)
+	if err != nil {
+		return nil, err
+	}
+	permission, err := s.PublicRepo.CheckPublicParticipantPermission(req.ConferenceID, req.UserID)
+	if err != nil {
+
+		return nil, err
+	}
+	if permission == false {
+		response := pb.JoinPublicConferenceResponse{
+			Result: "Participant permission denied",
+		}
+		return &response, errors.New("Participant permission denied")
+	}
+	if currentParticipants >= participantLimit {
+		response := pb.JoinPublicConferenceResponse{
+			Result: "Participant limit exceeded",
+		}
+		return &response, errors.New("Participant limit exceeded")
 	}
 	participantInput := utility.PublicRoomParticipants{
 		UserID:       req.UserID,
@@ -293,26 +345,64 @@ func (s *ConferenceServer) DeclineJoining(ctx context.Context, req *pb.DeclineJo
 	return &response, nil
 }
 
-func (s *ConferenceServer) RemoveParticipant(ctx context.Context, req *pb.RemoveParticipantRequest) (*pb.RemoveParticipantResponse, error) {
+func (s *ConferenceServer) RemovePrivateParticipant(ctx context.Context, req *pb.RemovePrivateParticipantRequest) (*pb.RemovePrivateParticipantResponse, error) {
 	userID := req.UserID
 	conferenceID := req.ConferenceID
 	if req.Block == true {
-		if err := s.PrivateRepo.BlockParticipant(conferenceID, userID); err != nil {
+		if err := s.PrivateRepo.BlockPrivateParticipant(conferenceID, userID); err != nil {
 			log.Fatal(err, ctx.Value("traceID"))
 			return nil, err
 		}
 	}
-	if err = s.PrivateRepo.RemoveParticipant(conferenceID, userID); err != nil {
+	if err = s.PrivateRepo.RemovePrivateParticipant(conferenceID, userID); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
-	response := pb.RemoveParticipantResponse{
+	response := pb.RemovePrivateParticipantResponse{
 		Result: "participant removed",
 	}
 	return &response, nil
 }
 
-func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveConferenceRequest) (*pb.LeaveConferenceResponse, error) {
+func (s *ConferenceServer) RemoveGroupParticipant(ctx context.Context, req *pb.RemoveGroupParticipantRequest) (*pb.RemoveGroupParticipantResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	if req.Block == true {
+		if err := s.GroupRepo.BlockGroupParticipant(conferenceID, userID); err != nil {
+			log.Fatal(err, ctx.Value("traceID"))
+			return nil, err
+		}
+	}
+	if err = s.GroupRepo.RemoveGroupParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	response := pb.RemoveGroupParticipantResponse{
+		Result: "participant removed",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) RemovePublicParticipant(ctx context.Context, req *pb.RemovePublicParticipantRequest) (*pb.RemovePublicParticipantResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	if req.Block == true {
+		if err := s.PublicRepo.BlockPublicParticipant(conferenceID, userID); err != nil {
+			log.Fatal(err, ctx.Value("traceID"))
+			return nil, err
+		}
+	}
+	if err = s.PublicRepo.RemovePublicParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	response := pb.RemovePublicParticipantResponse{
+		Result: "participant removed",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.LeavePrivateConferenceRequest) (*pb.LeavePrivateConferenceResponse, error) {
 	userID := req.UserID
 	conferenceID := req.ConferenceID
 	participantInput := utility.PrivateRoomParticipants{
@@ -320,26 +410,92 @@ func (s *ConferenceServer) LeaveConference(ctx context.Context, req *pb.LeaveCon
 		ConferenceID: conferenceID,
 		ExitTime:     time.Now(),
 	}
-	if err = s.PrivateRepo.UpdateParticipantExitTime(participantInput); err != nil {
+	if err = s.PrivateRepo.UpdatePrivateParticipantExitTime(participantInput); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
-	if err = s.PrivateRepo.RemoveParticipant(conferenceID, userID); err != nil {
+	if err = s.PrivateRepo.RemovePrivateParticipant(conferenceID, userID); err != nil {
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
-	response := pb.LeaveConferenceResponse{
+	response := pb.LeavePrivateConferenceResponse{
 		Result: "Exited from the conference",
 	}
 	return &response, nil
 }
 
-func (s *ConferenceServer) EndConference(ctx context.Context, req *pb.EndConferenceRequest) (*pb.EndConferenceResponse, error) {
-	err = s.PrivateRepo.RemoveRoom(req.ConferenceID)
+func (s *ConferenceServer) LeaveGroupConference(ctx context.Context, req *pb.LeaveGroupConferenceRequest) (*pb.LeaveGroupConferenceResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	participantInput := utility.GroupRoomParticipants{
+		UserID:       userID,
+		ConferenceID: conferenceID,
+		ExitTime:     time.Now(),
+	}
+	if err = s.GroupRepo.UpdateGroupParticipantExitTime(participantInput); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	if err = s.GroupRepo.RemoveGroupParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	response := pb.LeaveGroupConferenceResponse{
+		Result: "Exited from the conference",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) LeavePublicConference(ctx context.Context, req *pb.LeavePublicConferenceRequest) (*pb.LeavePublicConferenceResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	participantInput := utility.PublicRoomParticipants{
+		UserID:       userID,
+		ConferenceID: conferenceID,
+		ExitTime:     time.Now(),
+	}
+	if err = s.PublicRepo.UpdatePublicParticipantExitTime(participantInput); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	if err = s.PublicRepo.RemovePublicParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	response := pb.LeavePublicConferenceResponse{
+		Result: "Exited from the conference",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) EndPrivateConference(ctx context.Context, req *pb.EndPrivateConferenceRequest) (*pb.EndPrivateConferenceResponse, error) {
+	err = s.PrivateRepo.RemovePrivateRoom(req.ConferenceID)
 	if err != nil {
 		return nil, err
 	}
-	response := pb.EndConferenceResponse{
+	response := pb.EndPrivateConferenceResponse{
+		Result: "Conference ended",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) EndGroupConference(ctx context.Context, req *pb.EndGroupConferenceRequest) (*pb.EndGroupConferenceResponse, error) {
+	err = s.GroupRepo.RemoveGroupRoom(req.ConferenceID)
+	if err != nil {
+		return nil, err
+	}
+	response := pb.EndGroupConferenceResponse{
+		Result: "Conference ended",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndPublicConferenceRequest) (*pb.EndPublicConferenceResponse, error) {
+	err = s.PublicRepo.RemovePublicRoom(req.ConferenceID)
+	if err != nil {
+		return nil, err
+	}
+	response := pb.EndPublicConferenceResponse{
 		Result: "Conference ended",
 	}
 	return &response, nil

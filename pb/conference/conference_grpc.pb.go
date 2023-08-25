@@ -4,7 +4,7 @@
 // - protoc             v4.23.4
 // source: conference.proto
 
-package pb
+package conference
 
 import (
 	context "context"
@@ -19,23 +19,29 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Conference_HealthCheck_FullMethodName             = "/pb.Conference/HealthCheck"
-	Conference_ScheduleConference_FullMethodName      = "/pb.Conference/ScheduleConference"
-	Conference_StartPrivateConference_FullMethodName  = "/pb.Conference/StartPrivateConference"
-	Conference_StartGroupConference_FullMethodName    = "/pb.Conference/StartGroupConference"
-	Conference_StartPublicConference_FullMethodName   = "/pb.Conference/StartPublicConference"
-	Conference_JoinPrivateConference_FullMethodName   = "/pb.Conference/JoinPrivateConference"
-	Conference_JoinGroupConfernce_FullMethodName      = "/pb.Conference/JoinGroupConfernce"
-	Conference_JoinPublicConference_FullMethodName    = "/pb.Conference/JoinPublicConference"
-	Conference_AcceptJoining_FullMethodName           = "/pb.Conference/AcceptJoining"
-	Conference_DeclineJoining_FullMethodName          = "/pb.Conference/DeclineJoining"
-	Conference_LeaveConference_FullMethodName         = "/pb.Conference/LeaveConference"
-	Conference_RemoveParticipant_FullMethodName       = "/pb.Conference/RemoveParticipant"
-	Conference_ToggleCamera_FullMethodName            = "/pb.Conference/ToggleCamera"
-	Conference_ToggleMic_FullMethodName               = "/pb.Conference/ToggleMic"
-	Conference_ToggleParticipantCamera_FullMethodName = "/pb.Conference/ToggleParticipantCamera"
-	Conference_ToggleParticipantMic_FullMethodName    = "/pb.Conference/ToggleParticipantMic"
-	Conference_EndConference_FullMethodName           = "/pb.Conference/EndConference"
+	Conference_HealthCheck_FullMethodName              = "/conference.Conference/HealthCheck"
+	Conference_ScheduleConference_FullMethodName       = "/conference.Conference/ScheduleConference"
+	Conference_StartPrivateConference_FullMethodName   = "/conference.Conference/StartPrivateConference"
+	Conference_StartGroupConference_FullMethodName     = "/conference.Conference/StartGroupConference"
+	Conference_StartPublicConference_FullMethodName    = "/conference.Conference/StartPublicConference"
+	Conference_JoinPrivateConference_FullMethodName    = "/conference.Conference/JoinPrivateConference"
+	Conference_JoinGroupConfernce_FullMethodName       = "/conference.Conference/JoinGroupConfernce"
+	Conference_JoinPublicConference_FullMethodName     = "/conference.Conference/JoinPublicConference"
+	Conference_AcceptJoining_FullMethodName            = "/conference.Conference/AcceptJoining"
+	Conference_DeclineJoining_FullMethodName           = "/conference.Conference/DeclineJoining"
+	Conference_LeavePrivateConference_FullMethodName   = "/conference.Conference/LeavePrivateConference"
+	Conference_LeaveGroupConference_FullMethodName     = "/conference.Conference/LeaveGroupConference"
+	Conference_LeavePublicConference_FullMethodName    = "/conference.Conference/LeavePublicConference"
+	Conference_RemovePrivateParticipant_FullMethodName = "/conference.Conference/RemovePrivateParticipant"
+	Conference_RemoveGroupParticipant_FullMethodName   = "/conference.Conference/RemoveGroupParticipant"
+	Conference_RemovePublicParticipant_FullMethodName  = "/conference.Conference/RemovePublicParticipant"
+	Conference_EndPrivateConference_FullMethodName     = "/conference.Conference/EndPrivateConference"
+	Conference_EndGroupConference_FullMethodName       = "/conference.Conference/EndGroupConference"
+	Conference_EndPublicConference_FullMethodName      = "/conference.Conference/EndPublicConference"
+	Conference_ToggleCamera_FullMethodName             = "/conference.Conference/ToggleCamera"
+	Conference_ToggleMic_FullMethodName                = "/conference.Conference/ToggleMic"
+	Conference_ToggleParticipantCamera_FullMethodName  = "/conference.Conference/ToggleParticipantCamera"
+	Conference_ToggleParticipantMic_FullMethodName     = "/conference.Conference/ToggleParticipantMic"
 )
 
 // ConferenceClient is the client API for Conference service.
@@ -52,13 +58,19 @@ type ConferenceClient interface {
 	JoinPublicConference(ctx context.Context, in *JoinPublicConferenceRequest, opts ...grpc.CallOption) (*JoinPublicConferenceResponse, error)
 	AcceptJoining(ctx context.Context, in *AcceptJoiningRequest, opts ...grpc.CallOption) (*AcceptJoiningResponse, error)
 	DeclineJoining(ctx context.Context, in *DeclineJoiningRequest, opts ...grpc.CallOption) (*DeclineJoiningResponse, error)
-	LeaveConference(ctx context.Context, in *LeaveConferenceRequest, opts ...grpc.CallOption) (*LeaveConferenceResponse, error)
-	RemoveParticipant(ctx context.Context, in *RemoveParticipantRequest, opts ...grpc.CallOption) (*RemoveParticipantResponse, error)
+	LeavePrivateConference(ctx context.Context, in *LeavePrivateConferenceRequest, opts ...grpc.CallOption) (*LeavePrivateConferenceResponse, error)
+	LeaveGroupConference(ctx context.Context, in *LeaveGroupConferenceRequest, opts ...grpc.CallOption) (*LeaveGroupConferenceResponse, error)
+	LeavePublicConference(ctx context.Context, in *LeavePublicConferenceRequest, opts ...grpc.CallOption) (*LeavePublicConferenceResponse, error)
+	RemovePrivateParticipant(ctx context.Context, in *RemovePrivateParticipantRequest, opts ...grpc.CallOption) (*RemovePrivateParticipantResponse, error)
+	RemoveGroupParticipant(ctx context.Context, in *RemoveGroupParticipantRequest, opts ...grpc.CallOption) (*RemoveGroupParticipantResponse, error)
+	RemovePublicParticipant(ctx context.Context, in *RemovePublicParticipantRequest, opts ...grpc.CallOption) (*RemovePublicParticipantResponse, error)
+	EndPrivateConference(ctx context.Context, in *EndPrivateConferenceRequest, opts ...grpc.CallOption) (*EndPrivateConferenceResponse, error)
+	EndGroupConference(ctx context.Context, in *EndGroupConferenceRequest, opts ...grpc.CallOption) (*EndGroupConferenceResponse, error)
+	EndPublicConference(ctx context.Context, in *EndPublicConferenceRequest, opts ...grpc.CallOption) (*EndPublicConferenceResponse, error)
 	ToggleCamera(ctx context.Context, in *ToggleCameraRequest, opts ...grpc.CallOption) (*ToggleCameraResponse, error)
 	ToggleMic(ctx context.Context, in *ToggleMicRequest, opts ...grpc.CallOption) (*ToggleMicResponse, error)
 	ToggleParticipantCamera(ctx context.Context, in *ToggleParticipantCameraRequest, opts ...grpc.CallOption) (*ToggleParticipantCameraResponse, error)
 	ToggleParticipantMic(ctx context.Context, in *ToggleParticipantMicRequest, opts ...grpc.CallOption) (*ToggleParticipantMicResponse, error)
-	EndConference(ctx context.Context, in *EndConferenceRequest, opts ...grpc.CallOption) (*EndConferenceResponse, error)
 }
 
 type conferenceClient struct {
@@ -159,18 +171,81 @@ func (c *conferenceClient) DeclineJoining(ctx context.Context, in *DeclineJoinin
 	return out, nil
 }
 
-func (c *conferenceClient) LeaveConference(ctx context.Context, in *LeaveConferenceRequest, opts ...grpc.CallOption) (*LeaveConferenceResponse, error) {
-	out := new(LeaveConferenceResponse)
-	err := c.cc.Invoke(ctx, Conference_LeaveConference_FullMethodName, in, out, opts...)
+func (c *conferenceClient) LeavePrivateConference(ctx context.Context, in *LeavePrivateConferenceRequest, opts ...grpc.CallOption) (*LeavePrivateConferenceResponse, error) {
+	out := new(LeavePrivateConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_LeavePrivateConference_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return out, nil
 }
 
-func (c *conferenceClient) RemoveParticipant(ctx context.Context, in *RemoveParticipantRequest, opts ...grpc.CallOption) (*RemoveParticipantResponse, error) {
-	out := new(RemoveParticipantResponse)
-	err := c.cc.Invoke(ctx, Conference_RemoveParticipant_FullMethodName, in, out, opts...)
+func (c *conferenceClient) LeaveGroupConference(ctx context.Context, in *LeaveGroupConferenceRequest, opts ...grpc.CallOption) (*LeaveGroupConferenceResponse, error) {
+	out := new(LeaveGroupConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_LeaveGroupConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) LeavePublicConference(ctx context.Context, in *LeavePublicConferenceRequest, opts ...grpc.CallOption) (*LeavePublicConferenceResponse, error) {
+	out := new(LeavePublicConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_LeavePublicConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) RemovePrivateParticipant(ctx context.Context, in *RemovePrivateParticipantRequest, opts ...grpc.CallOption) (*RemovePrivateParticipantResponse, error) {
+	out := new(RemovePrivateParticipantResponse)
+	err := c.cc.Invoke(ctx, Conference_RemovePrivateParticipant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) RemoveGroupParticipant(ctx context.Context, in *RemoveGroupParticipantRequest, opts ...grpc.CallOption) (*RemoveGroupParticipantResponse, error) {
+	out := new(RemoveGroupParticipantResponse)
+	err := c.cc.Invoke(ctx, Conference_RemoveGroupParticipant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) RemovePublicParticipant(ctx context.Context, in *RemovePublicParticipantRequest, opts ...grpc.CallOption) (*RemovePublicParticipantResponse, error) {
+	out := new(RemovePublicParticipantResponse)
+	err := c.cc.Invoke(ctx, Conference_RemovePublicParticipant_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) EndPrivateConference(ctx context.Context, in *EndPrivateConferenceRequest, opts ...grpc.CallOption) (*EndPrivateConferenceResponse, error) {
+	out := new(EndPrivateConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_EndPrivateConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) EndGroupConference(ctx context.Context, in *EndGroupConferenceRequest, opts ...grpc.CallOption) (*EndGroupConferenceResponse, error) {
+	out := new(EndGroupConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_EndGroupConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) EndPublicConference(ctx context.Context, in *EndPublicConferenceRequest, opts ...grpc.CallOption) (*EndPublicConferenceResponse, error) {
+	out := new(EndPublicConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_EndPublicConference_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -213,15 +288,6 @@ func (c *conferenceClient) ToggleParticipantMic(ctx context.Context, in *ToggleP
 	return out, nil
 }
 
-func (c *conferenceClient) EndConference(ctx context.Context, in *EndConferenceRequest, opts ...grpc.CallOption) (*EndConferenceResponse, error) {
-	out := new(EndConferenceResponse)
-	err := c.cc.Invoke(ctx, Conference_EndConference_FullMethodName, in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 // ConferenceServer is the server API for Conference service.
 // All implementations must embed UnimplementedConferenceServer
 // for forward compatibility
@@ -236,13 +302,19 @@ type ConferenceServer interface {
 	JoinPublicConference(context.Context, *JoinPublicConferenceRequest) (*JoinPublicConferenceResponse, error)
 	AcceptJoining(context.Context, *AcceptJoiningRequest) (*AcceptJoiningResponse, error)
 	DeclineJoining(context.Context, *DeclineJoiningRequest) (*DeclineJoiningResponse, error)
-	LeaveConference(context.Context, *LeaveConferenceRequest) (*LeaveConferenceResponse, error)
-	RemoveParticipant(context.Context, *RemoveParticipantRequest) (*RemoveParticipantResponse, error)
+	LeavePrivateConference(context.Context, *LeavePrivateConferenceRequest) (*LeavePrivateConferenceResponse, error)
+	LeaveGroupConference(context.Context, *LeaveGroupConferenceRequest) (*LeaveGroupConferenceResponse, error)
+	LeavePublicConference(context.Context, *LeavePublicConferenceRequest) (*LeavePublicConferenceResponse, error)
+	RemovePrivateParticipant(context.Context, *RemovePrivateParticipantRequest) (*RemovePrivateParticipantResponse, error)
+	RemoveGroupParticipant(context.Context, *RemoveGroupParticipantRequest) (*RemoveGroupParticipantResponse, error)
+	RemovePublicParticipant(context.Context, *RemovePublicParticipantRequest) (*RemovePublicParticipantResponse, error)
+	EndPrivateConference(context.Context, *EndPrivateConferenceRequest) (*EndPrivateConferenceResponse, error)
+	EndGroupConference(context.Context, *EndGroupConferenceRequest) (*EndGroupConferenceResponse, error)
+	EndPublicConference(context.Context, *EndPublicConferenceRequest) (*EndPublicConferenceResponse, error)
 	ToggleCamera(context.Context, *ToggleCameraRequest) (*ToggleCameraResponse, error)
 	ToggleMic(context.Context, *ToggleMicRequest) (*ToggleMicResponse, error)
 	ToggleParticipantCamera(context.Context, *ToggleParticipantCameraRequest) (*ToggleParticipantCameraResponse, error)
 	ToggleParticipantMic(context.Context, *ToggleParticipantMicRequest) (*ToggleParticipantMicResponse, error)
-	EndConference(context.Context, *EndConferenceRequest) (*EndConferenceResponse, error)
 	mustEmbedUnimplementedConferenceServer()
 }
 
@@ -280,11 +352,32 @@ func (UnimplementedConferenceServer) AcceptJoining(context.Context, *AcceptJoini
 func (UnimplementedConferenceServer) DeclineJoining(context.Context, *DeclineJoiningRequest) (*DeclineJoiningResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeclineJoining not implemented")
 }
-func (UnimplementedConferenceServer) LeaveConference(context.Context, *LeaveConferenceRequest) (*LeaveConferenceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method LeaveConference not implemented")
+func (UnimplementedConferenceServer) LeavePrivateConference(context.Context, *LeavePrivateConferenceRequest) (*LeavePrivateConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeavePrivateConference not implemented")
 }
-func (UnimplementedConferenceServer) RemoveParticipant(context.Context, *RemoveParticipantRequest) (*RemoveParticipantResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method RemoveParticipant not implemented")
+func (UnimplementedConferenceServer) LeaveGroupConference(context.Context, *LeaveGroupConferenceRequest) (*LeaveGroupConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeaveGroupConference not implemented")
+}
+func (UnimplementedConferenceServer) LeavePublicConference(context.Context, *LeavePublicConferenceRequest) (*LeavePublicConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method LeavePublicConference not implemented")
+}
+func (UnimplementedConferenceServer) RemovePrivateParticipant(context.Context, *RemovePrivateParticipantRequest) (*RemovePrivateParticipantResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePrivateParticipant not implemented")
+}
+func (UnimplementedConferenceServer) RemoveGroupParticipant(context.Context, *RemoveGroupParticipantRequest) (*RemoveGroupParticipantResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveGroupParticipant not implemented")
+}
+func (UnimplementedConferenceServer) RemovePublicParticipant(context.Context, *RemovePublicParticipantRequest) (*RemovePublicParticipantResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemovePublicParticipant not implemented")
+}
+func (UnimplementedConferenceServer) EndPrivateConference(context.Context, *EndPrivateConferenceRequest) (*EndPrivateConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EndPrivateConference not implemented")
+}
+func (UnimplementedConferenceServer) EndGroupConference(context.Context, *EndGroupConferenceRequest) (*EndGroupConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EndGroupConference not implemented")
+}
+func (UnimplementedConferenceServer) EndPublicConference(context.Context, *EndPublicConferenceRequest) (*EndPublicConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method EndPublicConference not implemented")
 }
 func (UnimplementedConferenceServer) ToggleCamera(context.Context, *ToggleCameraRequest) (*ToggleCameraResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ToggleCamera not implemented")
@@ -297,9 +390,6 @@ func (UnimplementedConferenceServer) ToggleParticipantCamera(context.Context, *T
 }
 func (UnimplementedConferenceServer) ToggleParticipantMic(context.Context, *ToggleParticipantMicRequest) (*ToggleParticipantMicResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ToggleParticipantMic not implemented")
-}
-func (UnimplementedConferenceServer) EndConference(context.Context, *EndConferenceRequest) (*EndConferenceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method EndConference not implemented")
 }
 func (UnimplementedConferenceServer) mustEmbedUnimplementedConferenceServer() {}
 
@@ -494,38 +584,164 @@ func _Conference_DeclineJoining_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Conference_LeaveConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(LeaveConferenceRequest)
+func _Conference_LeavePrivateConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeavePrivateConferenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ConferenceServer).LeaveConference(ctx, in)
+		return srv.(ConferenceServer).LeavePrivateConference(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Conference_LeaveConference_FullMethodName,
+		FullMethod: Conference_LeavePrivateConference_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConferenceServer).LeaveConference(ctx, req.(*LeaveConferenceRequest))
+		return srv.(ConferenceServer).LeavePrivateConference(ctx, req.(*LeavePrivateConferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Conference_RemoveParticipant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(RemoveParticipantRequest)
+func _Conference_LeaveGroupConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeaveGroupConferenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ConferenceServer).RemoveParticipant(ctx, in)
+		return srv.(ConferenceServer).LeaveGroupConference(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Conference_RemoveParticipant_FullMethodName,
+		FullMethod: Conference_LeaveGroupConference_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConferenceServer).RemoveParticipant(ctx, req.(*RemoveParticipantRequest))
+		return srv.(ConferenceServer).LeaveGroupConference(ctx, req.(*LeaveGroupConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_LeavePublicConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LeavePublicConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).LeavePublicConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_LeavePublicConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).LeavePublicConference(ctx, req.(*LeavePublicConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_RemovePrivateParticipant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePrivateParticipantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).RemovePrivateParticipant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_RemovePrivateParticipant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).RemovePrivateParticipant(ctx, req.(*RemovePrivateParticipantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_RemoveGroupParticipant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveGroupParticipantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).RemoveGroupParticipant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_RemoveGroupParticipant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).RemoveGroupParticipant(ctx, req.(*RemoveGroupParticipantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_RemovePublicParticipant_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemovePublicParticipantRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).RemovePublicParticipant(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_RemovePublicParticipant_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).RemovePublicParticipant(ctx, req.(*RemovePublicParticipantRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_EndPrivateConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EndPrivateConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).EndPrivateConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_EndPrivateConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).EndPrivateConference(ctx, req.(*EndPrivateConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_EndGroupConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EndGroupConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).EndGroupConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_EndGroupConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).EndGroupConference(ctx, req.(*EndGroupConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_EndPublicConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EndPublicConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).EndPublicConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_EndPublicConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).EndPublicConference(ctx, req.(*EndPublicConferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -602,29 +818,11 @@ func _Conference_ToggleParticipantMic_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Conference_EndConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(EndConferenceRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(ConferenceServer).EndConference(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: Conference_EndConference_FullMethodName,
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConferenceServer).EndConference(ctx, req.(*EndConferenceRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 // Conference_ServiceDesc is the grpc.ServiceDesc for Conference service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var Conference_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "pb.Conference",
+	ServiceName: "conference.Conference",
 	HandlerType: (*ConferenceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -668,12 +866,40 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Conference_DeclineJoining_Handler,
 		},
 		{
-			MethodName: "LeaveConference",
-			Handler:    _Conference_LeaveConference_Handler,
+			MethodName: "LeavePrivateConference",
+			Handler:    _Conference_LeavePrivateConference_Handler,
 		},
 		{
-			MethodName: "RemoveParticipant",
-			Handler:    _Conference_RemoveParticipant_Handler,
+			MethodName: "LeaveGroupConference",
+			Handler:    _Conference_LeaveGroupConference_Handler,
+		},
+		{
+			MethodName: "LeavePublicConference",
+			Handler:    _Conference_LeavePublicConference_Handler,
+		},
+		{
+			MethodName: "RemovePrivateParticipant",
+			Handler:    _Conference_RemovePrivateParticipant_Handler,
+		},
+		{
+			MethodName: "RemoveGroupParticipant",
+			Handler:    _Conference_RemoveGroupParticipant_Handler,
+		},
+		{
+			MethodName: "RemovePublicParticipant",
+			Handler:    _Conference_RemovePublicParticipant_Handler,
+		},
+		{
+			MethodName: "EndPrivateConference",
+			Handler:    _Conference_EndPrivateConference_Handler,
+		},
+		{
+			MethodName: "EndGroupConference",
+			Handler:    _Conference_EndGroupConference_Handler,
+		},
+		{
+			MethodName: "EndPublicConference",
+			Handler:    _Conference_EndPublicConference_Handler,
 		},
 		{
 			MethodName: "ToggleCamera",
@@ -690,10 +916,6 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ToggleParticipantMic",
 			Handler:    _Conference_ToggleParticipantMic_Handler,
-		},
-		{
-			MethodName: "EndConference",
-			Handler:    _Conference_EndConference_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
