@@ -21,33 +21,35 @@ message Response {
 }
 
 message GroupHostPermissionRequest{
-
+  string userID = 1;
+  string groupID = 2;
 }
 
 message GroupHostPermissionResponse{
-
+  bool  permission = 1;
 }
 
 message GroupParticipantPermissionRequest{
-
+  string userID = 1;
+  string groupID = 2;
 }
 
 message GroupParticipantPermissionResponse{
-
+  bool  permission = 1;
 }
 
 message PublicHostPermissionRequest{
-
+  string userID = 1;
 }
 
 message PublicHostPermissionResponse{
-
+  bool  permission = 1;
 }
 
 message PublicParticipantPermissionRequest{
-
+  string userID = 1;
 }
 
 message PublicParticipantPermissionResponse{
-    
+  bool  permission = 1;
 }
