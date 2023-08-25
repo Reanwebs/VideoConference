@@ -1,7 +1,8 @@
-package repo
+package test
 
 import (
 	"conference/pkg/common/utility"
+	"conference/pkg/repository/repo"
 	"testing"
 	"time"
 
@@ -11,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func Test_CreateRoom(t *testing.T) {
+func Test_CreatePrivateRoom(t *testing.T) {
 
 	type args struct {
 		input utility.PrivateRoom
@@ -41,7 +42,7 @@ func Test_CreateRoom(t *testing.T) {
 			},
 			stub: func(mockSQL sqlmock.Sqlmock) {
 
-				expectedQuery := `^INSERT INTO conference_rooms(.+)$`
+				expectedQuery := `^INSERT INTO private_rooms(.+)$`
 				mockSQL.ExpectQuery(expectedQuery).WithArgs("yourUserID", "conferenceUID", "conferenceType", "Conference Title", "Conference Description", "Conference Interest", true, true, true, 100, time.Time{}, time.Time{}).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
@@ -64,9 +65,9 @@ func Test_CreateRoom(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CreatePrivateRoom(tt.args.input)
+			got, err := privateRepo.CreatePrivateRoom(tt.args.input)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -75,7 +76,7 @@ func Test_CreateRoom(t *testing.T) {
 
 }
 
-func Test_CheckLimit(t *testing.T) {
+func Test_CheckPrivateLimit(t *testing.T) {
 
 	conferenceID := "conf102"
 
@@ -88,7 +89,7 @@ func Test_CheckLimit(t *testing.T) {
 		{
 			name: "participant limit retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT participantlimit FROM conference_rooms WHERE conference_id = ?`
+				expectedQuery := `^SELECT participantlimit FROM private_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"participantlimit"}).AddRow(100))
 			},
@@ -109,9 +110,9 @@ func Test_CheckLimit(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CheckLimit(conferenceID)
+			got, err := privateRepo.CheckPrivateLimit(conferenceID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -119,7 +120,7 @@ func Test_CheckLimit(t *testing.T) {
 	}
 }
 
-func Test_CountParticipants(t *testing.T) {
+func Test_CountPrivateParticipants(t *testing.T) {
 	conferenceID := "conf102"
 
 	tests := []struct {
@@ -131,7 +132,7 @@ func Test_CountParticipants(t *testing.T) {
 		{
 			name: "participant count retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT COUNT\(\*\) FROM conference_participants WHERE conference_id = $?`
+				expectedQuery := `^SELECT COUNT\(\*\) FROM private_room_participants WHERE conference_id = $?`
 				mockSQL.ExpectQuery(expectedQuery).WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"participantcount"}).AddRow(0))
 			},
@@ -150,9 +151,9 @@ func Test_CountParticipants(t *testing.T) {
 			}), &gorm.Config{})
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CountParticipants(conferenceID)
+			got, err := privateRepo.CountPrivateParticipants(conferenceID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -160,7 +161,7 @@ func Test_CountParticipants(t *testing.T) {
 	}
 }
 
-func Test_CheckParticipantPermission(t *testing.T) {
+func Test_CheckPrivateParticipantPermission(t *testing.T) {
 	conferenceID := "conf102"
 	userID := "user102"
 	tests := []struct {
@@ -172,7 +173,7 @@ func Test_CheckParticipantPermission(t *testing.T) {
 		{
 			name: "participant permission retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `SELECT permission FROM conference_participants`
+				expectedQuery := `SELECT permission FROM private_room_participants WHERE conference_id = \$1 AND user_id = \$2$`
 				mockSQL.ExpectQuery(expectedQuery).WithArgs(conferenceID, userID).
 					WillReturnRows(sqlmock.NewRows([]string{"permission"}).AddRow(true))
 			},
@@ -191,9 +192,9 @@ func Test_CheckParticipantPermission(t *testing.T) {
 			}), &gorm.Config{})
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CheckParticipantPermission(conferenceID, userID)
+			got, err := privateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -201,7 +202,7 @@ func Test_CheckParticipantPermission(t *testing.T) {
 	}
 }
 
-func Test_AddParticipant(t *testing.T) {
+func Test_AddParticipantInPrivateRoom(t *testing.T) {
 
 	participantInput := utility.PrivateRoomParticipants{
 		UserID:       "yourUserID",
@@ -221,7 +222,7 @@ func Test_AddParticipant(t *testing.T) {
 		{
 			name: "participant added",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^INSERT INTO conference_participants(.+)$`
+				expectedQuery := `^INSERT INTO private_room_participants(.+)$`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs("yourUserID", "conf102", "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -242,16 +243,16 @@ func Test_AddParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			err := repo.AddParticipantInPrivateRoom(participantInput)
+			err := privateRepo.AddParticipantInPrivateRoom(participantInput)
 
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
 }
 
-func Test_BlockParticipant(t *testing.T) {
+func Test_BlockPrivateParticipant(t *testing.T) {
 
 	conferenceID := "conf202"
 	userID := "UserID"
@@ -264,7 +265,7 @@ func Test_BlockParticipant(t *testing.T) {
 		{
 			name: "participant blocked",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^UPDATE conference_participants SET permission = false`
+				expectedQuery := `^UPDATE private_room_participants SET permission = false`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs(conferenceID, userID).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -285,16 +286,16 @@ func Test_BlockParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			err := repo.BlockParticipant(conferenceID, userID)
+			err := privateRepo.BlockPrivateParticipant(conferenceID, userID)
 
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
 }
 
-func Test_UpdateParticipantExitTime(t *testing.T) {
+func Test_UpdatePrivateParticipantExitTime(t *testing.T) {
 
 	participantInput := utility.PrivateRoomParticipants{
 		UserID:       "yourUserID",
@@ -310,7 +311,7 @@ func Test_UpdateParticipantExitTime(t *testing.T) {
 		{
 			name: "participant exit time updated",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^UPDATE conference_participants SET exit_time = ?`
+				expectedQuery := `^UPDATE private_room_participants SET exit_time = ?`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs(participantInput.ExitTime, participantInput.UserID, participantInput.ConferenceID).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -331,16 +332,16 @@ func Test_UpdateParticipantExitTime(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			err := repo.UpdateParticipantExitTime(participantInput)
+			err := privateRepo.UpdatePrivateParticipantExitTime(participantInput)
 
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}
 }
 
-func Test_RemoveParticipant(t *testing.T) {
+func Test_RemovePrivateParticipant(t *testing.T) {
 
 	conferenceID := "conf102"
 	userID := "UserID"
@@ -353,7 +354,7 @@ func Test_RemoveParticipant(t *testing.T) {
 		{
 			name: "participant removed",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^DELETE FROM conference_participants`
+				expectedQuery := `^DELETE FROM private_room_participants`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs(conferenceID, userID).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -374,9 +375,9 @@ func Test_RemoveParticipant(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			err := repo.RemoveParticipant(conferenceID, userID)
+			err := privateRepo.RemovePrivateParticipant(conferenceID, userID)
 
 			assert.Equal(t, tt.wantErr, err)
 		})
@@ -397,7 +398,7 @@ func Test_CheckType(t *testing.T) {
 		{
 			name: "conference type retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT type FROM conference_rooms WHERE conference_id = ?`
+				expectedQuery := `^SELECT type FROM private_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"type"}).AddRow(conferenceType))
@@ -419,9 +420,9 @@ func Test_CheckType(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CheckType(conferenceID)
+			got, err := privateRepo.CheckType(conferenceID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -443,7 +444,7 @@ func Test_CheckInterest(t *testing.T) {
 		{
 			name: "interest retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT interest FROM conference_rooms WHERE conference_id = ?`
+				expectedQuery := `^SELECT interest FROM private_rooms WHERE conference_id = ?`
 				mockSQL.ExpectQuery(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnRows(sqlmock.NewRows([]string{"interest"}).AddRow(interest))
@@ -465,9 +466,9 @@ func Test_CheckInterest(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			got, err := repo.CheckInterest(conferenceID)
+			got, err := privateRepo.CheckPrivateInterest(conferenceID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)
@@ -475,7 +476,7 @@ func Test_CheckInterest(t *testing.T) {
 	}
 }
 
-func Test_RemoveRoom(t *testing.T) {
+func Test_RemovePrivateRoom(t *testing.T) {
 
 	conferenceID := "conf102"
 
@@ -487,7 +488,7 @@ func Test_RemoveRoom(t *testing.T) {
 		{
 			name: "room removed",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^DELETE FROM conference_rooms WHERE conference_id = ?`
+				expectedQuery := `^DELETE FROM private_rooms WHERE conference_id = ?`
 				mockSQL.ExpectExec(expectedQuery).
 					WithArgs(conferenceID).
 					WillReturnResult(sqlmock.NewResult(0, 1))
@@ -508,9 +509,9 @@ func Test_RemoveRoom(t *testing.T) {
 
 			tt.stub(mockSQL)
 
-			repo := NewPrivateConferenceRepo(gormDB)
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
-			err := repo.RemoveRoom(conferenceID)
+			err := privateRepo.RemovePrivateRoom(conferenceID)
 			assert.Equal(t, tt.wantErr, err)
 		})
 	}

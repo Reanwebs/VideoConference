@@ -15,13 +15,20 @@ service Conference{
   rpc JoinPublicConference (JoinPublicConferenceRequest) returns (JoinPublicConferenceResponse){}
   rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
   rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
-  rpc LeaveConference(LeaveConferenceRequest)returns (LeaveConferenceResponse){}
-  rpc RemoveParticipant (RemoveParticipantRequest) returns (RemoveParticipantResponse){}
+  rpc LeavePrivateConference(LeavePrivateConferenceRequest)returns (LeavePrivateConferenceResponse){}
+  rpc LeaveGroupConference(LeaveGroupConferenceRequest)returns (LeaveGroupConferenceResponse){}
+  rpc LeavePublicConference(LeavePublicConferenceRequest)returns (LeavePublicConferenceResponse){}
+  rpc RemovePrivateParticipant (RemovePrivateParticipantRequest) returns (RemovePrivateParticipantResponse){}
+  rpc RemoveGroupParticipant (RemoveGroupParticipantRequest) returns (RemoveGroupParticipantResponse){}
+  rpc RemovePublicParticipant (RemovePublicParticipantRequest) returns (RemovePublicParticipantResponse){}
+  rpc EndPrivateConference(EndPrivateConferenceRequest) returns (EndPrivateConferenceResponse){}
+  rpc EndGroupConference(EndGroupConferenceRequest) returns (EndGroupConferenceResponse){}
+  rpc EndPublicConference(EndPublicConferenceRequest) returns (EndPublicConferenceResponse){}
   rpc ToggleCamera (ToggleCameraRequest) returns (ToggleCameraResponse){}
   rpc ToggleMic (ToggleMicRequest) returns (ToggleMicResponse){}
   rpc ToggleParticipantCamera(ToggleParticipantCameraRequest) returns (ToggleParticipantCameraResponse){}
   rpc ToggleParticipantMic(ToggleParticipantMicRequest) returns (ToggleParticipantMicResponse){}
-  rpc EndConference(EndConferenceRequest) returns (EndConferenceResponse){}
+  
 }
 
 
@@ -163,14 +170,36 @@ message DeclineJoiningResponse {
 
 // RemoveParticipant
 
-message RemoveParticipantRequest {
+message RemovePrivateParticipantRequest {
     string userID = 1;
     string hostID = 2;
     string conferenceID = 3;
     bool   block        = 4;
 }
 
-message RemoveParticipantResponse {
+message RemovePrivateParticipantResponse {
+    string result = 1;
+}
+
+message RemoveGroupParticipantRequest {
+    string userID = 1;
+    string hostID = 2;
+    string conferenceID = 3;
+    bool   block        = 4;
+}
+
+message RemoveGroupParticipantResponse {
+    string result = 1;
+}
+
+message RemovePublicParticipantRequest {
+    string userID = 1;
+    string hostID = 2;
+    string conferenceID = 3;
+    bool   block        = 4;
+}
+
+message RemovePublicParticipantResponse {
     string result = 1;
 }
 
@@ -223,23 +252,57 @@ message ToggleParticipantMicResponse {
 
 // LeaveConference
 
-message LeaveConferenceRequest {
+message LeavePrivateConferenceRequest {
     string userID = 1;
     string conferenceID = 2;
 }
 
-message LeaveConferenceResponse {
+message LeavePrivateConferenceResponse {
     string result = 1;
 }
 
-
-// EndConference
-
-message EndConferenceRequest {
+message LeaveGroupConferenceRequest {
     string userID = 1;
     string conferenceID = 2;
 }
 
-message EndConferenceResponse {
+message LeaveGroupConferenceResponse {
+    string result = 1;
+}
+
+message LeavePublicConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message LeavePublicConferenceResponse {
+    string result = 1;
+}
+// EndConference
+
+message EndPrivateConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message EndPrivateConferenceResponse {
+    string result = 1;
+}
+
+message EndGroupConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message EndGroupConferenceResponse {
+    string result = 1;
+}
+
+message EndPublicConferenceRequest {
+    string userID = 1;
+    string conferenceID = 2;
+}
+
+message EndPublicConferenceResponse {
     string result = 1;
 }
