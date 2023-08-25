@@ -422,3 +422,5 @@ func Test_RemovePublicRoom(t *testing.T) {
 		})
 	}
 }
+
+//
