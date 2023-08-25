@@ -29,7 +29,13 @@ func NewAuthClient(client pb.AuthClient) AuthClient {
 
 func (a *authClient) HealthCheck(ctx context.Context, req *pb.Request) (*pb.Response, error) {
 
-	return nil, nil
+	resp, err := a.Client.HealthCheck(ctx, &pb.Request{
+		Data: "Hi authentication server",
+	})
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (a *authClient) GroupHostPermission(ctx context.Context, req *pb.GroupHostPermissionRequest) (*pb.GroupHostPermissionResponse, error) {

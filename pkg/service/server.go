@@ -10,7 +10,7 @@ import (
 	"google.golang.org/grpc/reflection"
 )
 
-type Service struct {
+type Server struct {
 	GrpcServer   *grpc.Server
 	PortListener net.Listener
 }

@@ -85,13 +85,13 @@ func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.Sta
 	var input utility.GroupRoom
 	copier.Copy(&input, req)
 	request := &authpb.GroupHostPermissionRequest{}
-	_, err := s.Client.GroupHostPermission(ctx, request)
+	resp, err := s.Client.GroupHostPermission(ctx, request)
 	if err != nil {
 		return nil, err
 	}
-	// if permission == false {
-	// 	return nil, err
-	// }
+	if resp.Permission == false {
+		return nil, errors.New("host permission denied")
+	}
 
 	uid, err := utility.UID(8)
 	if err != nil {
@@ -126,13 +126,13 @@ func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.St
 	var input utility.PublicRoom
 	traceID := ctx.Value("traceID")
 	request := &authpb.PublicHostPermissionRequest{}
-	_, err := s.Client.PublicHostPermission(ctx, request)
+	resp, err := s.Client.PublicHostPermission(ctx, request)
 	if err != nil {
 		return nil, err
 	}
-	// if permission == false {
-	// 	return nil, err
-	// }
+	if resp.Permission == false {
+		return nil, errors.New("host permission denied")
+	}
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
@@ -203,12 +203,13 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.JoinGroupConferenceRequest) (*pb.JoinGroupConferenceResponse, error) {
 	var input utility.GroupRoomParticipants
 	traceID := ctx.Value("traceID")
-	permission, err := s.Client.GroupParticipantPermission(input.UserID)
+	clientRequest := &authpb.GroupParticipantPermissionRequest{}
+	resp, err := s.Client.GroupParticipantPermission(ctx, clientRequest)
 	if err != nil {
-		return nil, errors.New("error" + err + "traceID" + traceID)
+		return nil, err
 	}
-	if permission == false {
-		return nil, errors.New("error" + err + "traceID" + traceID)
+	if resp.Permission == false {
+		return nil, errors.New("user permission denied")
 	}
 	participantInput := utility.GroupRoomParticipants{
 		UserID:       req.UserID,
@@ -233,12 +234,13 @@ func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.Join
 func (s *ConferenceServer) JoinPublicConference(ctx context.Context, req *pb.JoinPublicConferenceRequest) (*pb.JoinPublicConferenceResponse, error) {
 	var input utility.PublicRoomParticipants
 	traceID := ctx.Value("traceID")
-	permission, err := s.Client.PublicParticipantPermission(input.UserID)
+	clientRequest := &authpb.PublicParticipantPermissionRequest{}
+	resp, err := s.Client.PublicParticipantPermission(ctx, clientRequest)
 	if err != nil {
-		return nil, errors.New("error" + err + "traceID" + traceID)
+		return nil, err
 	}
-	if permission == false {
-		return nil, errors.New("error" + err + "traceID" + traceID)
+	if resp.Permission == false {
+		return nil, errors.New("user permission denied")
 	}
 	participantInput := utility.PublicRoomParticipants{
 		UserID:       req.UserID,
