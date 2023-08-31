@@ -6,6 +6,8 @@ package monitization;
 
 service Monitization{
     rpc HealthCheck(Request) returns (Response){}
+    rpc ConferenceParticipationReward(ParticipationRewardRequest) returns(ParticipationRewardResponse){}
+
 }
 
 message Request{
@@ -14,4 +16,16 @@ message Request{
 
 message Response{
     string Result =1;
+}
+
+message ParticipationRewardRequest{
+    string UserID         = 1;
+    string ConferenceID   = 2;
+    string ConferenceType = 3;
+    int32  Minutes        = 4;  
+}
+
+message ParticipationRewardResponse{
+    string Result    = 1;
+    int32  CoinCount = 2;
 }
