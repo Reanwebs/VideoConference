@@ -3,6 +3,7 @@ package service
 import (
 	authpb "conference/pb/auth"
 	pb "conference/pb/conference"
+	monitPb "conference/pb/monitization"
 	"conference/pkg/client/auth"
 	monit "conference/pkg/client/monitization"
 	"conference/pkg/common/utility"
@@ -45,7 +46,16 @@ func (s *ConferenceServer) HealthCheck(ctx context.Context, req *pb.Request) (*p
 	timestamp := time.Now().UnixNano()
 	randomNumber := rand.Intn(1000000)
 	traceID := fmt.Sprintf("%d-%d", timestamp, randomNumber)
-	result := traceID + " " + req.Data
+	monitReq := &monitPb.Request{
+		Data: req.Data,
+	}
+	resp, err := s.MonitClient.HealthCheck(ctx, monitReq)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
+
+	result := traceID + resp.Result + req.Data
 	return &pb.Response{Result: result}, nil
 }
 
