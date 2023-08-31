@@ -59,7 +59,7 @@ message ScheduleConferenceRequest {
 
 message ScheduleConferenceResponse{
     string Result = 1;
-    string ConferenceID = 2;
+    string ScheduleID = 2;
 }
 
 message ScheduleGroupConferenceRequest {
@@ -79,7 +79,7 @@ message ScheduleGroupConferenceRequest {
 
 message ScheduleGroupConferenceResponse{
     string Result = 1;
-    string ConferenceID = 2;
+    string ScheduleID = 2;
 }
 
 message SchedulePublicConferenceRequest {
@@ -99,7 +99,7 @@ message SchedulePublicConferenceRequest {
 
 message SchedulePublicConferenceResponse{
     string Result = 1;
-    string ConferenceID = 2;
+    string ScheduleID = 2;
 }
 
 // Start Conference

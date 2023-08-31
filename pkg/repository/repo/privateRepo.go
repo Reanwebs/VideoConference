@@ -20,6 +20,10 @@ func NewPrivateConferenceRepo(db *gorm.DB) *conferenceRepo {
 	}
 }
 
+func (c *conferenceRepo) CreatePrivateSchedule(input utility.ScheduleConference) (uint, error) {
+	return 1, nil
+}
+
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
 	query := `
         INSERT INTO private_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)

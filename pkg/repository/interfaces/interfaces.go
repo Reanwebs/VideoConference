@@ -3,6 +3,7 @@ package interfaces
 import "conference/pkg/common/utility"
 
 type PrivateRepo interface {
+	CreatePrivateSchedule(utility.ScheduleConference) (uint, error)
 	CreatePrivateRoom(utility.PrivateRoom) (uint, error)
 	CheckPrivateLimit(string) (uint, error)
 	CountPrivateParticipants(string) (uint, error)
@@ -17,6 +18,7 @@ type PrivateRepo interface {
 }
 
 type GroupRepo interface {
+	CreateGroupSchedule(utility.ScheduleGroupConference) (uint, error)
 	CreateGroupRoom(utility.GroupRoom) error
 	AddParticipantInGroupRoom(utility.GroupRoomParticipants) error
 	CheckGroupLimit(string) (uint, error)
@@ -29,6 +31,7 @@ type GroupRepo interface {
 }
 
 type PublicRepo interface {
+	CreatePublicSchedule(utility.SchedulePublicConference) (uint, error)
 	CreatePublicRoom(utility.PublicRoom) error
 	AddParticipantInPublicRoom(utility.PublicRoomParticipants) error
 	CheckPublicLimit(string) (uint, error)

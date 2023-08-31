@@ -99,6 +99,7 @@ type PublicRoomParticipants struct {
 type ScheduleConference struct {
 	gorm.Model
 	UserId      string
+	ScheduleID  string
 	Title       string
 	Description string
 	Interest    string
@@ -111,6 +112,7 @@ type ScheduleConference struct {
 type ScheduleGroupConference struct {
 	gorm.Model
 	GroupID     string
+	ScheduleID  string
 	Title       string
 	Description string
 	Interest    string
@@ -123,6 +125,7 @@ type ScheduleGroupConference struct {
 type SchedulePublicConference struct {
 	gorm.Model
 	UserID      string
+	ScheduleID  string
 	Title       string
 	Description string
 	Interest    string

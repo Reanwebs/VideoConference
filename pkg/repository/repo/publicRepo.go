@@ -13,6 +13,11 @@ func NewPublicConferenceRepo(db *gorm.DB) *conferenceRepo {
 		DB: db,
 	}
 }
+
+func (c *conferenceRepo) CreatePublicSchedule(input utility.SchedulePublicConference) (uint, error) {
+	return 1, nil
+}
+
 func (c *conferenceRepo) CreatePublicRoom(input utility.PublicRoom) error {
 	query := `
         INSERT INTO public_rooms (user_id, conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
