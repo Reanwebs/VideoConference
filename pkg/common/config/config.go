@@ -10,6 +10,7 @@ type Config struct {
 	DbPort     string `mapstructure:"DB_PORT"`
 	DbPassword string `mapstructure:"DB_PASSWORD"`
 	AuthUrl    string `mapstructure:"AUTH_SERVER_URL"`
+	MonitUrl   string `mapstructure:"MONITIZATION_SERVER_URL"`
 }
 
 func LoadConfig() (config Config, err error) {

@@ -20,6 +20,6 @@ func ConnectToDB(cfg config.Config) *gorm.DB {
 		return nil
 	}
 	DB = db
-	DB.AutoMigrate(utility.PrivateRoom{}, utility.PrivateRoomParticipants{})
+	DB.AutoMigrate(utility.PrivateRoom{}, utility.PrivateRoomParticipants{}, utility.GroupRoom{}, utility.GroupRoomParticipants{}, utility.PublicRoom{}, utility.PublicRoomParticipants{})
 	return db
 }

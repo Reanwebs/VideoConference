@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+option go_package = "pb/monitization";
+
+package monitization;
+
+service Monitization{
+    rpc HealthCheck(Request) returns (Response){}
+}
+
+message Request{
+    string Data = 1;
+}
+
+message Response{
+    string Result =1;
+}
