@@ -95,3 +95,39 @@ type PublicRoomParticipants struct {
 	ExitTime     time.Time
 	Role         string
 }
+
+type ScheduleConference struct {
+	gorm.Model
+	UserId      string
+	Title       string
+	Description string
+	Interest    string
+	Month       time.Month
+	Day         time.Weekday
+	Time        time.Time
+	Duration    time.Duration
+}
+
+type ScheduleGroupConference struct {
+	gorm.Model
+	GroupID     string
+	Title       string
+	Description string
+	Interest    string
+	Month       time.Month
+	Day         time.Weekday
+	Time        time.Time
+	Duration    time.Duration
+}
+
+type SchedulePublicConference struct {
+	gorm.Model
+	UserID      string
+	Title       string
+	Description string
+	Interest    string
+	Month       time.Month
+	Day         time.Weekday
+	Time        time.Time
+	Duration    time.Duration
+}
