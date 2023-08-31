@@ -88,7 +88,7 @@ func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.Sta
 	var input utility.GroupRoom
 	copier.Copy(&input, req)
 	request := &authpb.GroupHostPermissionRequest{}
-	resp, err := s.Client.GroupHostPermission(ctx, request)
+	resp, err := s.AuthClient.GroupHostPermission(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -129,7 +129,7 @@ func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.St
 	var input utility.PublicRoom
 	traceID := ctx.Value("traceID")
 	request := &authpb.PublicHostPermissionRequest{}
-	resp, err := s.Client.PublicHostPermission(ctx, request)
+	resp, err := s.AuthClient.PublicHostPermission(ctx, request)
 	if err != nil {
 		return nil, err
 	}
@@ -207,7 +207,7 @@ func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.Join
 	var input utility.GroupRoomParticipants
 	traceID := ctx.Value("traceID")
 	clientRequest := &authpb.GroupParticipantPermissionRequest{}
-	resp, err := s.Client.GroupParticipantPermission(ctx, clientRequest)
+	resp, err := s.AuthClient.GroupParticipantPermission(ctx, clientRequest)
 	if err != nil {
 		return nil, err
 	}
@@ -265,7 +265,7 @@ func (s *ConferenceServer) JoinPublicConference(ctx context.Context, req *pb.Joi
 	var input utility.PublicRoomParticipants
 	traceID := ctx.Value("traceID")
 	clientRequest := &authpb.PublicParticipantPermissionRequest{}
-	resp, err := s.Client.PublicParticipantPermission(ctx, clientRequest)
+	resp, err := s.AuthClient.PublicParticipantPermission(ctx, clientRequest)
 	if err != nil {
 		return nil, err
 	}
