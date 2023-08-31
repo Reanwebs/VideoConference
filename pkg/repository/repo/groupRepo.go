@@ -15,6 +15,10 @@ func NewGroupConferenceRepo(db *gorm.DB) *conferenceRepo {
 	}
 }
 
+func (c *conferenceRepo) CreateGroupSchedule(input utility.ScheduleGroupConference) (uint, error) {
+	return 1, nil
+}
+
 func (c *conferenceRepo) CreateGroupRoom(input utility.GroupRoom) error {
 	query := `
         INSERT INTO group_rooms (user_id, conference_id, group_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)

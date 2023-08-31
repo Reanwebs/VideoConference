@@ -505,15 +505,60 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 }
 
 func (s *ConferenceServer) ScheduleConference(ctx context.Context, req *pb.ScheduleConferenceRequest) (*pb.ScheduleConferenceResponse, error) {
-	return nil, nil
+	var input utility.ScheduleConference
+	copier.Copy(&input, req)
+	uid, err := utility.UID(8)
+	if err != nil {
+		return nil, err
+	}
+	input.ScheduleID = uid
+	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
+	if err != nil {
+		return nil, err
+	}
+	response := pb.ScheduleConferenceResponse{
+		Result:     "Conference scheduled",
+		ScheduleID: uid,
+	}
+	return &response, nil
 }
 
 func (s *ConferenceServer) ScheduleGroupConference(ctx context.Context, req *pb.ScheduleGroupConferenceRequest) (*pb.ScheduleGroupConferenceResponse, error) {
-	return nil, nil
+	var input utility.ScheduleGroupConference
+	copier.Copy(&input, req)
+	uid, err := utility.UID(8)
+	if err != nil {
+		return nil, err
+	}
+	input.ScheduleID = uid
+	_, err = s.GroupRepo.CreateGroupSchedule(input)
+	if err != nil {
+		return nil, err
+	}
+	response := pb.ScheduleGroupConferenceResponse{
+		Result:     "Conference scheduled",
+		ScheduleID: uid,
+	}
+	return &response, nil
 }
 
 func (s *ConferenceServer) SchedulePublicConference(ctx context.Context, req *pb.SchedulePublicConferenceRequest) (*pb.SchedulePublicConferenceResponse, error) {
-	return nil, nil
+	var input utility.SchedulePublicConference
+	copier.Copy(&input, req)
+	uid, err := utility.UID(8)
+	if err != nil {
+		return nil, err
+	}
+	input.ScheduleID = uid
+	_, err = s.PublicRepo.CreatePublicSchedule(input)
+	if err != nil {
+		return nil, err
+	}
+	response := pb.SchedulePublicConferenceResponse{
+		Result:     "Conference scheduled",
+		ScheduleID: uid,
+	}
+	return &response, nil
 }
 
 // not implimented
