@@ -504,6 +504,18 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 	return &response, nil
 }
 
+func (s *ConferenceServer) ScheduleConference(ctx context.Context, req *pb.ScheduleConferenceRequest) (*pb.ScheduleConferenceResponse, error) {
+	return nil, nil
+}
+
+func (s *ConferenceServer) ScheduleGroupConference(ctx context.Context, req *pb.ScheduleGroupConferenceRequest) (*pb.ScheduleGroupConferenceResponse, error) {
+	return nil, nil
+}
+
+func (s *ConferenceServer) SchedulePublicConference(ctx context.Context, req *pb.SchedulePublicConferenceRequest) (*pb.SchedulePublicConferenceResponse, error) {
+	return nil, nil
+}
+
 // not implimented
 
 func (s *ConferenceServer) ToggleCamera(ctx context.Context, req *pb.ToggleCameraRequest) (*pb.ToggleCameraResponse, error) {

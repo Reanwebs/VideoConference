@@ -7,6 +7,8 @@ package conference;
 service Conference{
   rpc HealthCheck(Request) returns (Response);
   rpc ScheduleConference(ScheduleConferenceRequest) returns (ScheduleConferenceResponse){}
+  rpc ScheduleGroupConference(ScheduleGroupConferenceRequest) returns (ScheduleGroupConferenceResponse){}
+  rpc SchedulePublicConference(SchedulePublicConferenceRequest)returns(SchedulePublicConferenceResponse){}
   rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
   rpc StartGroupConference (StartGroupConferenceRequest) returns (StartGroupConferenceResponse){}
   rpc StartPublicConference (StartPublicConferenceRequest) returns (StartPublicConferenceResponse){}
@@ -42,21 +44,60 @@ message Response {
 
 message ScheduleConferenceRequest {
     string userID  = 1;
-    string type    = 2;
-    string title   = 3;
-    string description = 4;
-    string interest    = 5;
-    bool   recording   = 6;
-    bool   chat        = 7;
-    bool   broadcast   = 8;
-    int32  participantlimit = 9;
-    string date          = 10;
-    int64  time_seconds = 11;
-    int32  time_nanos = 12;
+    string title   = 2;
+    string description = 3;
+    string interest    = 4;
+    bool   recording   = 5;
+    bool   chat        = 6;
+    bool   broadcast   = 7;
+    int32  participantlimit = 8;
+    string date          = 9;
+    int64  time_seconds = 10;
+    int32  time_nanos = 11;
  }
 
 
 message ScheduleConferenceResponse{
+    string Result = 1;
+    string ConferenceID = 2;
+}
+
+message ScheduleGroupConferenceRequest {
+    string groupID  = 1;
+    string title   = 2;
+    string description = 3;
+    string interest    = 4;
+    bool   recording   = 5;
+    bool   chat        = 6;
+    bool   broadcast   = 7;
+    int32  participantlimit = 8;
+    string date          = 9;
+    int64  time_seconds = 10;
+    int32  time_nanos = 11;
+ }
+
+
+message ScheduleGroupConferenceResponse{
+    string Result = 1;
+    string ConferenceID = 2;
+}
+
+message SchedulePublicConferenceRequest {
+    string userID  = 1;
+    string title   = 2;
+    string description = 3;
+    string interest    = 4;
+    bool   recording   = 5;
+    bool   chat        = 6;
+    bool   broadcast   = 7;
+    int32  participantlimit = 8;
+    string date          = 9;
+    int64  time_seconds = 10;
+    int32  time_nanos = 11;
+ }
+
+
+message SchedulePublicConferenceResponse{
     string Result = 1;
     string ConferenceID = 2;
 }
