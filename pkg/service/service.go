@@ -4,6 +4,7 @@ import (
 	authpb "conference/pb/auth"
 	pb "conference/pb/conference"
 	"conference/pkg/client/auth"
+	monit "conference/pkg/client/monitization"
 	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
@@ -22,15 +23,17 @@ var (
 
 type ConferenceServer struct {
 	pb.UnimplementedConferenceServer
-	Client      auth.AuthClient
+	AuthClient  auth.AuthClient
+	MonitClient monit.MonitizationClient
 	PrivateRepo interfaces.PrivateRepo
 	GroupRepo   interfaces.GroupRepo
 	PublicRepo  interfaces.PublicRepo
 }
 
-func NewConferenceServer(client auth.AuthClient, pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo) *ConferenceServer {
+func NewConferenceServer(authClient auth.AuthClient, monitClient monit.MonitizationClient, pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo) *ConferenceServer {
 	return &ConferenceServer{
-		Client:      client,
+		AuthClient:  authClient,
+		MonitClient: monitClient,
 		PrivateRepo: pRepo,
 		GroupRepo:   gRepo,
 		PublicRepo:  puRepo,

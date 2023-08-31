@@ -1,7 +1,8 @@
 package di
 
 import (
-	client "conference/pkg/client/auth"
+	auth "conference/pkg/client/auth"
+	monit "conference/pkg/client/monitization"
 	"conference/pkg/common/config"
 	db "conference/pkg/repository/database"
 	"conference/pkg/repository/repo"
@@ -27,12 +28,17 @@ func InitializeAPI(cfg config.Config) (*service.Server, error) {
 	GroupRepo := repo.NewGroupConferenceRepo(DB)
 	PublicRepo := repo.NewPublicConferenceRepo(DB)
 
-	client, err := client.InitClient(cfg)
+	authClient, err := auth.InitClient(cfg)
 	if err != nil {
 		return nil, err
 	}
 
-	usecase := service.NewConferenceServer(client, PrivateRepo, GroupRepo, PublicRepo)
+	monitClient, err := monit.InitClient(cfg)
+	if err != nil {
+		return nil, err
+	}
+
+	usecase := service.NewConferenceServer(authClient, monitClient, PrivateRepo, GroupRepo, PublicRepo)
 
 	server := service.NewGrpcServer(cfg, usecase)
 
