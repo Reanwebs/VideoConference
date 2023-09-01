@@ -431,6 +431,7 @@ func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.L
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
+
 	response := pb.LeavePrivateConferenceResponse{
 		Result: "Exited from the conference",
 	}
