@@ -19,7 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Monitization_HealthCheck_FullMethodName = "/monitization.Monitization/HealthCheck"
+	Monitization_HealthCheck_FullMethodName                   = "/monitization.Monitization/HealthCheck"
+	Monitization_ConferenceParticipationReward_FullMethodName = "/monitization.Monitization/ConferenceParticipationReward"
+	Monitization_UserRewardHistory_FullMethodName             = "/monitization.Monitization/UserRewardHistory"
+	Monitization_GroupRewardHistory_FullMethodName            = "/monitization.Monitization/GroupRewardHistory"
 )
 
 // MonitizationClient is the client API for Monitization service.
@@ -27,6 +30,9 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MonitizationClient interface {
 	HealthCheck(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
+	ConferenceParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error)
+	UserRewardHistory(ctx context.Context, in *UserRewardHistoryRequest, opts ...grpc.CallOption) (*UserRewardHistoryResponse, error)
+	GroupRewardHistory(ctx context.Context, in *GroupRewardHistoryRequest, opts ...grpc.CallOption) (*GroupRewardHistoryResponse, error)
 }
 
 type monitizationClient struct {
@@ -46,11 +52,41 @@ func (c *monitizationClient) HealthCheck(ctx context.Context, in *Request, opts 
 	return out, nil
 }
 
+func (c *monitizationClient) ConferenceParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error) {
+	out := new(ParticipationRewardResponse)
+	err := c.cc.Invoke(ctx, Monitization_ConferenceParticipationReward_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *monitizationClient) UserRewardHistory(ctx context.Context, in *UserRewardHistoryRequest, opts ...grpc.CallOption) (*UserRewardHistoryResponse, error) {
+	out := new(UserRewardHistoryResponse)
+	err := c.cc.Invoke(ctx, Monitization_UserRewardHistory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *monitizationClient) GroupRewardHistory(ctx context.Context, in *GroupRewardHistoryRequest, opts ...grpc.CallOption) (*GroupRewardHistoryResponse, error) {
+	out := new(GroupRewardHistoryResponse)
+	err := c.cc.Invoke(ctx, Monitization_GroupRewardHistory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MonitizationServer is the server API for Monitization service.
 // All implementations must embed UnimplementedMonitizationServer
 // for forward compatibility
 type MonitizationServer interface {
 	HealthCheck(context.Context, *Request) (*Response, error)
+	ConferenceParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error)
+	UserRewardHistory(context.Context, *UserRewardHistoryRequest) (*UserRewardHistoryResponse, error)
+	GroupRewardHistory(context.Context, *GroupRewardHistoryRequest) (*GroupRewardHistoryResponse, error)
 	mustEmbedUnimplementedMonitizationServer()
 }
 
@@ -60,6 +96,15 @@ type UnimplementedMonitizationServer struct {
 
 func (UnimplementedMonitizationServer) HealthCheck(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
+}
+func (UnimplementedMonitizationServer) ConferenceParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ConferenceParticipationReward not implemented")
+}
+func (UnimplementedMonitizationServer) UserRewardHistory(context.Context, *UserRewardHistoryRequest) (*UserRewardHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UserRewardHistory not implemented")
+}
+func (UnimplementedMonitizationServer) GroupRewardHistory(context.Context, *GroupRewardHistoryRequest) (*GroupRewardHistoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GroupRewardHistory not implemented")
 }
 func (UnimplementedMonitizationServer) mustEmbedUnimplementedMonitizationServer() {}
 
@@ -92,6 +137,60 @@ func _Monitization_HealthCheck_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Monitization_ConferenceParticipationReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ParticipationRewardRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MonitizationServer).ConferenceParticipationReward(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Monitization_ConferenceParticipationReward_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MonitizationServer).ConferenceParticipationReward(ctx, req.(*ParticipationRewardRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Monitization_UserRewardHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UserRewardHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MonitizationServer).UserRewardHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Monitization_UserRewardHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MonitizationServer).UserRewardHistory(ctx, req.(*UserRewardHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Monitization_GroupRewardHistory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GroupRewardHistoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MonitizationServer).GroupRewardHistory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Monitization_GroupRewardHistory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MonitizationServer).GroupRewardHistory(ctx, req.(*GroupRewardHistoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Monitization_ServiceDesc is the grpc.ServiceDesc for Monitization service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -102,6 +201,18 @@ var Monitization_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "HealthCheck",
 			Handler:    _Monitization_HealthCheck_Handler,
+		},
+		{
+			MethodName: "ConferenceParticipationReward",
+			Handler:    _Monitization_ConferenceParticipationReward_Handler,
+		},
+		{
+			MethodName: "UserRewardHistory",
+			Handler:    _Monitization_UserRewardHistory_Handler,
+		},
+		{
+			MethodName: "GroupRewardHistory",
+			Handler:    _Monitization_GroupRewardHistory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
