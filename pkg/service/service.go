@@ -515,7 +515,7 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 	return &response, nil
 }
 
-func (s *ConferenceServer) ScheduleConference(ctx context.Context, req *pb.ScheduleConferenceRequest) (*pb.ScheduleConferenceResponse, error) {
+func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
@@ -528,7 +528,7 @@ func (s *ConferenceServer) ScheduleConference(ctx context.Context, req *pb.Sched
 	if err != nil {
 		return nil, err
 	}
-	response := pb.ScheduleConferenceResponse{
+	response := pb.SchedulePrivateConferenceResponse{
 		Result:     "Conference scheduled",
 		ScheduleID: uid,
 	}
