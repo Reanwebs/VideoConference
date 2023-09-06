@@ -21,7 +21,27 @@ func NewPrivateConferenceRepo(db *gorm.DB) *conferenceRepo {
 }
 
 func (c *conferenceRepo) CreatePrivateSchedule(input utility.ScheduleConference) (uint, error) {
-	return 1, nil
+	query := `
+        INSERT INTO schedule_conferences (user_id, schedule_id, title, description, interest, time, duration, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULL)
+        RETURNING id`
+
+	var id uint
+	err := c.DB.Raw(query,
+		input.UserId,
+		input.ScheduleID,
+		input.Title,
+		input.Description,
+		input.Interest,
+		input.Time,
+		input.Duration,
+		time.Now(),
+	).Row().Scan(&id)
+
+	if err != nil {
+		return 0, err
+	}
+	return id, nil
 }
 
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
