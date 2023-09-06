@@ -103,8 +103,6 @@ type ScheduleConference struct {
 	Title       string
 	Description string
 	Interest    string
-	Month       time.Month
-	Day         time.Weekday
 	Time        time.Time
 	Duration    time.Duration
 }

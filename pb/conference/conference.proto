@@ -4,6 +4,8 @@ option go_package = "/pb/conference";
 
 package conference;
 
+import "google/protobuf/timestamp.proto";
+
 service Conference{
   rpc HealthCheck(Request) returns (Response);
   rpc ScheduleConference(ScheduleConferenceRequest) returns (ScheduleConferenceResponse){}
@@ -49,11 +51,10 @@ message ScheduleConferenceRequest {
     string interest    = 4;
     bool   recording   = 5;
     bool   chat        = 6;
-    bool   broadcast   = 7;
-    int32  participantlimit = 8;
-    string date          = 9;
-    int64  time_seconds = 10;
-    int32  time_nanos = 11;
+    int32  participantlimit = 7;
+    google.protobuf.Timestamp time = 8;
+    string status      = 9;
+    int32  duration    = 10;
  }
 
 
@@ -69,11 +70,10 @@ message ScheduleGroupConferenceRequest {
     string interest    = 4;
     bool   recording   = 5;
     bool   chat        = 6;
-    bool   broadcast   = 7;
-    int32  participantlimit = 8;
-    string date          = 9;
-    int64  time_seconds = 10;
-    int32  time_nanos = 11;
+    int32  participantlimit = 7;
+    google.protobuf.Timestamp time = 8;
+    string status      = 9;
+    int32  duration    = 10;
  }
 
 
@@ -89,11 +89,10 @@ message SchedulePublicConferenceRequest {
     string interest    = 4;
     bool   recording   = 5;
     bool   chat        = 6;
-    bool   broadcast   = 7;
-    int32  participantlimit = 8;
-    string date          = 9;
-    int64  time_seconds = 10;
-    int32  time_nanos = 11;
+    int32  participantlimit = 7;
+    google.protobuf.Timestamp time = 8;
+    string status      = 9;
+    int32  duration    = 10;
  }
 
 

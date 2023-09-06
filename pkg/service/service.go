@@ -523,6 +523,7 @@ func (s *ConferenceServer) ScheduleConference(ctx context.Context, req *pb.Sched
 		return nil, err
 	}
 	input.ScheduleID = uid
+	// input.Time = input.Time
 	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
 	if err != nil {
 		return nil, err
