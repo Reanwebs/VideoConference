@@ -19,31 +19,31 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Conference_HealthCheck_FullMethodName              = "/conference.Conference/HealthCheck"
-	Conference_ScheduleConference_FullMethodName       = "/conference.Conference/ScheduleConference"
-	Conference_ScheduleGroupConference_FullMethodName  = "/conference.Conference/ScheduleGroupConference"
-	Conference_SchedulePublicConference_FullMethodName = "/conference.Conference/SchedulePublicConference"
-	Conference_StartPrivateConference_FullMethodName   = "/conference.Conference/StartPrivateConference"
-	Conference_StartGroupConference_FullMethodName     = "/conference.Conference/StartGroupConference"
-	Conference_StartPublicConference_FullMethodName    = "/conference.Conference/StartPublicConference"
-	Conference_JoinPrivateConference_FullMethodName    = "/conference.Conference/JoinPrivateConference"
-	Conference_JoinGroupConfernce_FullMethodName       = "/conference.Conference/JoinGroupConfernce"
-	Conference_JoinPublicConference_FullMethodName     = "/conference.Conference/JoinPublicConference"
-	Conference_AcceptJoining_FullMethodName            = "/conference.Conference/AcceptJoining"
-	Conference_DeclineJoining_FullMethodName           = "/conference.Conference/DeclineJoining"
-	Conference_LeavePrivateConference_FullMethodName   = "/conference.Conference/LeavePrivateConference"
-	Conference_LeaveGroupConference_FullMethodName     = "/conference.Conference/LeaveGroupConference"
-	Conference_LeavePublicConference_FullMethodName    = "/conference.Conference/LeavePublicConference"
-	Conference_RemovePrivateParticipant_FullMethodName = "/conference.Conference/RemovePrivateParticipant"
-	Conference_RemoveGroupParticipant_FullMethodName   = "/conference.Conference/RemoveGroupParticipant"
-	Conference_RemovePublicParticipant_FullMethodName  = "/conference.Conference/RemovePublicParticipant"
-	Conference_EndPrivateConference_FullMethodName     = "/conference.Conference/EndPrivateConference"
-	Conference_EndGroupConference_FullMethodName       = "/conference.Conference/EndGroupConference"
-	Conference_EndPublicConference_FullMethodName      = "/conference.Conference/EndPublicConference"
-	Conference_ToggleCamera_FullMethodName             = "/conference.Conference/ToggleCamera"
-	Conference_ToggleMic_FullMethodName                = "/conference.Conference/ToggleMic"
-	Conference_ToggleParticipantCamera_FullMethodName  = "/conference.Conference/ToggleParticipantCamera"
-	Conference_ToggleParticipantMic_FullMethodName     = "/conference.Conference/ToggleParticipantMic"
+	Conference_HealthCheck_FullMethodName               = "/conference.Conference/HealthCheck"
+	Conference_SchedulePrivateConference_FullMethodName = "/conference.Conference/SchedulePrivateConference"
+	Conference_ScheduleGroupConference_FullMethodName   = "/conference.Conference/ScheduleGroupConference"
+	Conference_SchedulePublicConference_FullMethodName  = "/conference.Conference/SchedulePublicConference"
+	Conference_StartPrivateConference_FullMethodName    = "/conference.Conference/StartPrivateConference"
+	Conference_StartGroupConference_FullMethodName      = "/conference.Conference/StartGroupConference"
+	Conference_StartPublicConference_FullMethodName     = "/conference.Conference/StartPublicConference"
+	Conference_JoinPrivateConference_FullMethodName     = "/conference.Conference/JoinPrivateConference"
+	Conference_JoinGroupConfernce_FullMethodName        = "/conference.Conference/JoinGroupConfernce"
+	Conference_JoinPublicConference_FullMethodName      = "/conference.Conference/JoinPublicConference"
+	Conference_AcceptJoining_FullMethodName             = "/conference.Conference/AcceptJoining"
+	Conference_DeclineJoining_FullMethodName            = "/conference.Conference/DeclineJoining"
+	Conference_LeavePrivateConference_FullMethodName    = "/conference.Conference/LeavePrivateConference"
+	Conference_LeaveGroupConference_FullMethodName      = "/conference.Conference/LeaveGroupConference"
+	Conference_LeavePublicConference_FullMethodName     = "/conference.Conference/LeavePublicConference"
+	Conference_RemovePrivateParticipant_FullMethodName  = "/conference.Conference/RemovePrivateParticipant"
+	Conference_RemoveGroupParticipant_FullMethodName    = "/conference.Conference/RemoveGroupParticipant"
+	Conference_RemovePublicParticipant_FullMethodName   = "/conference.Conference/RemovePublicParticipant"
+	Conference_EndPrivateConference_FullMethodName      = "/conference.Conference/EndPrivateConference"
+	Conference_EndGroupConference_FullMethodName        = "/conference.Conference/EndGroupConference"
+	Conference_EndPublicConference_FullMethodName       = "/conference.Conference/EndPublicConference"
+	Conference_ToggleCamera_FullMethodName              = "/conference.Conference/ToggleCamera"
+	Conference_ToggleMic_FullMethodName                 = "/conference.Conference/ToggleMic"
+	Conference_ToggleParticipantCamera_FullMethodName   = "/conference.Conference/ToggleParticipantCamera"
+	Conference_ToggleParticipantMic_FullMethodName      = "/conference.Conference/ToggleParticipantMic"
 )
 
 // ConferenceClient is the client API for Conference service.
@@ -51,7 +51,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ConferenceClient interface {
 	HealthCheck(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
-	ScheduleConference(ctx context.Context, in *ScheduleConferenceRequest, opts ...grpc.CallOption) (*ScheduleConferenceResponse, error)
+	SchedulePrivateConference(ctx context.Context, in *SchedulePrivateConferenceRequest, opts ...grpc.CallOption) (*SchedulePrivateConferenceResponse, error)
 	ScheduleGroupConference(ctx context.Context, in *ScheduleGroupConferenceRequest, opts ...grpc.CallOption) (*ScheduleGroupConferenceResponse, error)
 	SchedulePublicConference(ctx context.Context, in *SchedulePublicConferenceRequest, opts ...grpc.CallOption) (*SchedulePublicConferenceResponse, error)
 	StartPrivateConference(ctx context.Context, in *StartPrivateConferenceRequest, opts ...grpc.CallOption) (*StartPrivateConferenceResponse, error)
@@ -94,9 +94,9 @@ func (c *conferenceClient) HealthCheck(ctx context.Context, in *Request, opts ..
 	return out, nil
 }
 
-func (c *conferenceClient) ScheduleConference(ctx context.Context, in *ScheduleConferenceRequest, opts ...grpc.CallOption) (*ScheduleConferenceResponse, error) {
-	out := new(ScheduleConferenceResponse)
-	err := c.cc.Invoke(ctx, Conference_ScheduleConference_FullMethodName, in, out, opts...)
+func (c *conferenceClient) SchedulePrivateConference(ctx context.Context, in *SchedulePrivateConferenceRequest, opts ...grpc.CallOption) (*SchedulePrivateConferenceResponse, error) {
+	out := new(SchedulePrivateConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_SchedulePrivateConference_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -315,7 +315,7 @@ func (c *conferenceClient) ToggleParticipantMic(ctx context.Context, in *ToggleP
 // for forward compatibility
 type ConferenceServer interface {
 	HealthCheck(context.Context, *Request) (*Response, error)
-	ScheduleConference(context.Context, *ScheduleConferenceRequest) (*ScheduleConferenceResponse, error)
+	SchedulePrivateConference(context.Context, *SchedulePrivateConferenceRequest) (*SchedulePrivateConferenceResponse, error)
 	ScheduleGroupConference(context.Context, *ScheduleGroupConferenceRequest) (*ScheduleGroupConferenceResponse, error)
 	SchedulePublicConference(context.Context, *SchedulePublicConferenceRequest) (*SchedulePublicConferenceResponse, error)
 	StartPrivateConference(context.Context, *StartPrivateConferenceRequest) (*StartPrivateConferenceResponse, error)
@@ -349,8 +349,8 @@ type UnimplementedConferenceServer struct {
 func (UnimplementedConferenceServer) HealthCheck(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
-func (UnimplementedConferenceServer) ScheduleConference(context.Context, *ScheduleConferenceRequest) (*ScheduleConferenceResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ScheduleConference not implemented")
+func (UnimplementedConferenceServer) SchedulePrivateConference(context.Context, *SchedulePrivateConferenceRequest) (*SchedulePrivateConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SchedulePrivateConference not implemented")
 }
 func (UnimplementedConferenceServer) ScheduleGroupConference(context.Context, *ScheduleGroupConferenceRequest) (*ScheduleGroupConferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ScheduleGroupConference not implemented")
@@ -452,20 +452,20 @@ func _Conference_HealthCheck_Handler(srv interface{}, ctx context.Context, dec f
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Conference_ScheduleConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(ScheduleConferenceRequest)
+func _Conference_SchedulePrivateConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SchedulePrivateConferenceRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(ConferenceServer).ScheduleConference(ctx, in)
+		return srv.(ConferenceServer).SchedulePrivateConference(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Conference_ScheduleConference_FullMethodName,
+		FullMethod: Conference_SchedulePrivateConference_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ConferenceServer).ScheduleConference(ctx, req.(*ScheduleConferenceRequest))
+		return srv.(ConferenceServer).SchedulePrivateConference(ctx, req.(*SchedulePrivateConferenceRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -896,8 +896,8 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Conference_HealthCheck_Handler,
 		},
 		{
-			MethodName: "ScheduleConference",
-			Handler:    _Conference_ScheduleConference_Handler,
+			MethodName: "SchedulePrivateConference",
+			Handler:    _Conference_SchedulePrivateConference_Handler,
 		},
 		{
 			MethodName: "ScheduleGroupConference",

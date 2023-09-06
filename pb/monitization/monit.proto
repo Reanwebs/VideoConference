@@ -4,9 +4,13 @@ option go_package = "pb/monitization";
 
 package monitization;
 
+import "google/protobuf/timestamp.proto";
+
 service Monitization{
     rpc HealthCheck(Request) returns (Response){}
     rpc ConferenceParticipationReward(ParticipationRewardRequest) returns(ParticipationRewardResponse){}
+    rpc UserRewardHistory(UserRewardHistoryRequest) returns (UserRewardHistoryResponse){}
+    rpc GroupRewardHistory(GroupRewardHistoryRequest) returns (GroupRewardHistoryResponse){}
 
 }
 
@@ -29,3 +33,40 @@ message ParticipationRewardResponse{
     string Result    = 1;
     int32  CoinCount = 2;
 }
+
+message UserRewardHistoryRequest{
+    string UserID = 1;
+    string Sort   = 2;
+}
+
+message UserRewardHistory {
+    string UserID = 1;
+    string reward_type = 2;
+    string transaction_type = 3;
+    uint32 coin_count = 4;
+    google.protobuf.Timestamp time = 5;
+}
+
+message UserRewardHistoryResponse {
+    repeated UserRewardHistory Result = 1;
+}
+
+message GroupRewardHistoryRequest{
+    string GroupID = 1;
+    string Sort    = 2;
+}
+
+message GroupRewardHistory {
+    string GroupID = 1;
+    string reward_type = 2;
+    string transaction_type = 3;
+    uint32 coin_count = 4;
+    google.protobuf.Timestamp time = 5;
+}
+
+message GroupRewardHistoryResponse{
+    repeated GroupRewardHistory Result = 1;
+}
+
+
+

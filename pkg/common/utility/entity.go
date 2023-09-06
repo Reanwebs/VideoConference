@@ -132,3 +132,11 @@ type SchedulePublicConference struct {
 	Time        time.Time
 	Duration    time.Duration
 }
+
+type UserRewardHistory struct {
+	UserID          string
+	RewardType      string
+	TransactionType string
+	CoinCount       uint
+	Time            time.Time
+}

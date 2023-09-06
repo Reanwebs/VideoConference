@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 
 service Conference{
   rpc HealthCheck(Request) returns (Response);
-  rpc ScheduleConference(ScheduleConferenceRequest) returns (ScheduleConferenceResponse){}
+  rpc SchedulePrivateConference(SchedulePrivateConferenceRequest) returns (SchedulePrivateConferenceResponse){}
   rpc ScheduleGroupConference(ScheduleGroupConferenceRequest) returns (ScheduleGroupConferenceResponse){}
   rpc SchedulePublicConference(SchedulePublicConferenceRequest)returns(SchedulePublicConferenceResponse){}
   rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
@@ -44,7 +44,7 @@ message Response {
   string result = 1;
 }
 
-message ScheduleConferenceRequest {
+message SchedulePrivateConferenceRequest {
     string userID  = 1;
     string title   = 2;
     string description = 3;
@@ -58,7 +58,7 @@ message ScheduleConferenceRequest {
  }
 
 
-message ScheduleConferenceResponse{
+message SchedulePrivateConferenceResponse{
     string Result = 1;
     string ScheduleID = 2;
 }
