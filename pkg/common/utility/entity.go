@@ -98,13 +98,14 @@ type PublicRoomParticipants struct {
 
 type ScheduleConference struct {
 	gorm.Model
-	UserId      string
-	ScheduleID  string
-	Title       string
-	Description string
-	Interest    string
-	Time        time.Time
-	Duration    time.Duration
+	UserId           string
+	ScheduleID       string
+	Title            string
+	Description      string
+	Interest         string
+	ParticipantLimit uint
+	Time             time.Time
+	Duration         time.Duration
 }
 
 type ScheduleGroupConference struct {
@@ -131,12 +132,4 @@ type SchedulePublicConference struct {
 	Day         time.Weekday
 	Time        time.Time
 	Duration    time.Duration
-}
-
-type UserRewardHistory struct {
-	UserID          string
-	RewardType      string
-	TransactionType string
-	CoinCount       uint
-	Time            time.Time
 }

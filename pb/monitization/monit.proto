@@ -11,6 +11,9 @@ service Monitization{
     rpc ConferenceParticipationReward(ParticipationRewardRequest) returns(ParticipationRewardResponse){}
     rpc UserRewardHistory(UserRewardHistoryRequest) returns (UserRewardHistoryResponse){}
     rpc GroupRewardHistory(GroupRewardHistoryRequest) returns (GroupRewardHistoryResponse){}
+    rpc UserWatchHour(UserWatchHourRequest) returns (UserWatchHourResponse){}
+    rpc ConferenceWatchHour(ConferenceWatchHourRequest) returns (ConferenceWatchHourResponse){}
+    rpc GroupWatchHour(GroupWatchHourRequest) returns (GroupWatchHourResponse){}
 
 }
 
@@ -69,4 +72,30 @@ message GroupRewardHistoryResponse{
 }
 
 
+message UserWatchHourRequest{
+    string UserID = 1;
+}
+
+message UserWatchHourResponse{
+    int32  Hour  = 1;
+    string UserID = 2;
+}
+
+message ConferenceWatchHourRequest{
+    string ConferenceID = 1;
+}
+
+message ConferenceWatchHourResponse{
+    int32 Hour = 1;
+    repeated UserWatchHourResponse User = 2;
+}
+
+message GroupWatchHourRequest{
+    string GroupID = 1;
+}
+
+message GroupWatchHourResponse{
+    int32 Hour = 1;
+    repeated UserWatchHourResponse User = 2;
+}
 

@@ -15,6 +15,8 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jinzhu/copier"
 )
 
@@ -517,13 +519,22 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
+	ts := &timestamp.Timestamp{
+		Seconds: 1694113200,
+		Nanos:   0,
+	}
+	t, err := ptypes.Timestamp(ts)
+	if err != nil {
+		fmt.Println("Error converting Timestamp:", err)
+
+	}
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
 	}
 	input.ScheduleID = uid
-	// input.Time = input.Time
+	input.Time = t
 	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
 	if err != nil {
 		return nil, err
@@ -537,7 +548,9 @@ func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *p
 
 func (s *ConferenceServer) ScheduleGroupConference(ctx context.Context, req *pb.ScheduleGroupConferenceRequest) (*pb.ScheduleGroupConferenceResponse, error) {
 	var input utility.ScheduleGroupConference
-	copier.Copy(&input, req)
+	if err = copier.Copy(&input, req); err != nil {
+
+	}
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
