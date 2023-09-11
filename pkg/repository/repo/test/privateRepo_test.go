@@ -386,6 +386,53 @@ func Test_UpdatePrivateParticipantExitTime(t *testing.T) {
 	}
 }
 
+func Test_GetJoinTime(t *testing.T) {
+
+	conferenceID := "conf122"
+	userID := "yourUserID"
+	joinTime := time.Now()
+
+	tests := []struct {
+		name    string
+		stub    func(mockSQL sqlmock.Sqlmock)
+		want    time.Time
+		wantErr error
+	}{
+		{
+			name: "join time retrieved",
+			stub: func(mockSQL sqlmock.Sqlmock) {
+				expectedQuery := `^SELECT join_time FROM private_room_participants WHERE conference_id = ? AND user_id = ?`
+				mockSQL.ExpectQuery(expectedQuery).
+					WithArgs(conferenceID, userID).
+					WillReturnRows(sqlmock.NewRows([]string{"join_time"}).AddRow(joinTime))
+			},
+			want:    joinTime,
+			wantErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+
+		t.Run(tt.name, func(t *testing.T) {
+			mockDB, mockSQL, _ := sqlmock.New()
+			defer mockDB.Close()
+
+			gormDB, _ := gorm.Open(postgres.New(postgres.Config{
+				Conn: mockDB,
+			}), &gorm.Config{})
+
+			tt.stub(mockSQL)
+
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
+
+			got, err := privateRepo.GetJoinTime(conferenceID, userID)
+
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantErr, err)
+		})
+	}
+}
+
 func Test_RemovePrivateParticipant(t *testing.T) {
 
 	conferenceID := "conf102"

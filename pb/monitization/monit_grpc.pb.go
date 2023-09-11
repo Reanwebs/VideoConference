@@ -19,13 +19,13 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	Monitization_HealthCheck_FullMethodName                   = "/monitization.Monitization/HealthCheck"
-	Monitization_ConferenceParticipationReward_FullMethodName = "/monitization.Monitization/ConferenceParticipationReward"
-	Monitization_UserRewardHistory_FullMethodName             = "/monitization.Monitization/UserRewardHistory"
-	Monitization_GroupRewardHistory_FullMethodName            = "/monitization.Monitization/GroupRewardHistory"
-	Monitization_UserWatchHour_FullMethodName                 = "/monitization.Monitization/UserWatchHour"
-	Monitization_ConferenceWatchHour_FullMethodName           = "/monitization.Monitization/ConferenceWatchHour"
-	Monitization_GroupWatchHour_FullMethodName                = "/monitization.Monitization/GroupWatchHour"
+	Monitization_HealthCheck_FullMethodName         = "/monitization.Monitization/HealthCheck"
+	Monitization_ParticipationReward_FullMethodName = "/monitization.Monitization/ParticipationReward"
+	Monitization_UserRewardHistory_FullMethodName   = "/monitization.Monitization/UserRewardHistory"
+	Monitization_GroupRewardHistory_FullMethodName  = "/monitization.Monitization/GroupRewardHistory"
+	Monitization_UserWatchHour_FullMethodName       = "/monitization.Monitization/UserWatchHour"
+	Monitization_ConferenceWatchHour_FullMethodName = "/monitization.Monitization/ConferenceWatchHour"
+	Monitization_GroupWatchHour_FullMethodName      = "/monitization.Monitization/GroupWatchHour"
 )
 
 // MonitizationClient is the client API for Monitization service.
@@ -33,7 +33,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type MonitizationClient interface {
 	HealthCheck(ctx context.Context, in *Request, opts ...grpc.CallOption) (*Response, error)
-	ConferenceParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error)
+	ParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error)
 	UserRewardHistory(ctx context.Context, in *UserRewardHistoryRequest, opts ...grpc.CallOption) (*UserRewardHistoryResponse, error)
 	GroupRewardHistory(ctx context.Context, in *GroupRewardHistoryRequest, opts ...grpc.CallOption) (*GroupRewardHistoryResponse, error)
 	UserWatchHour(ctx context.Context, in *UserWatchHourRequest, opts ...grpc.CallOption) (*UserWatchHourResponse, error)
@@ -58,9 +58,9 @@ func (c *monitizationClient) HealthCheck(ctx context.Context, in *Request, opts 
 	return out, nil
 }
 
-func (c *monitizationClient) ConferenceParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error) {
+func (c *monitizationClient) ParticipationReward(ctx context.Context, in *ParticipationRewardRequest, opts ...grpc.CallOption) (*ParticipationRewardResponse, error) {
 	out := new(ParticipationRewardResponse)
-	err := c.cc.Invoke(ctx, Monitization_ConferenceParticipationReward_FullMethodName, in, out, opts...)
+	err := c.cc.Invoke(ctx, Monitization_ParticipationReward_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -117,7 +117,7 @@ func (c *monitizationClient) GroupWatchHour(ctx context.Context, in *GroupWatchH
 // for forward compatibility
 type MonitizationServer interface {
 	HealthCheck(context.Context, *Request) (*Response, error)
-	ConferenceParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error)
+	ParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error)
 	UserRewardHistory(context.Context, *UserRewardHistoryRequest) (*UserRewardHistoryResponse, error)
 	GroupRewardHistory(context.Context, *GroupRewardHistoryRequest) (*GroupRewardHistoryResponse, error)
 	UserWatchHour(context.Context, *UserWatchHourRequest) (*UserWatchHourResponse, error)
@@ -133,8 +133,8 @@ type UnimplementedMonitizationServer struct {
 func (UnimplementedMonitizationServer) HealthCheck(context.Context, *Request) (*Response, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method HealthCheck not implemented")
 }
-func (UnimplementedMonitizationServer) ConferenceParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method ConferenceParticipationReward not implemented")
+func (UnimplementedMonitizationServer) ParticipationReward(context.Context, *ParticipationRewardRequest) (*ParticipationRewardResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ParticipationReward not implemented")
 }
 func (UnimplementedMonitizationServer) UserRewardHistory(context.Context, *UserRewardHistoryRequest) (*UserRewardHistoryResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UserRewardHistory not implemented")
@@ -182,20 +182,20 @@ func _Monitization_HealthCheck_Handler(srv interface{}, ctx context.Context, dec
 	return interceptor(ctx, in, info, handler)
 }
 
-func _Monitization_ConferenceParticipationReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _Monitization_ParticipationReward_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ParticipationRewardRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(MonitizationServer).ConferenceParticipationReward(ctx, in)
+		return srv.(MonitizationServer).ParticipationReward(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: Monitization_ConferenceParticipationReward_FullMethodName,
+		FullMethod: Monitization_ParticipationReward_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(MonitizationServer).ConferenceParticipationReward(ctx, req.(*ParticipationRewardRequest))
+		return srv.(MonitizationServer).ParticipationReward(ctx, req.(*ParticipationRewardRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -302,8 +302,8 @@ var Monitization_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _Monitization_HealthCheck_Handler,
 		},
 		{
-			MethodName: "ConferenceParticipationReward",
-			Handler:    _Monitization_ConferenceParticipationReward_Handler,
+			MethodName: "ParticipationReward",
+			Handler:    _Monitization_ParticipationReward_Handler,
 		},
 		{
 			MethodName: "UserRewardHistory",

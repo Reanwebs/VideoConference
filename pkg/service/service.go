@@ -459,9 +459,26 @@ func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.L
 		log.Fatal(err, ctx.Value("traceID"))
 		return nil, err
 	}
-
+	joinTime, err := s.PrivateRepo.GetJoinTime(conferenceID, userID)
+	if err != nil {
+		log.Println(err, "Get join time err")
+	}
+	minutes, err := utility.TimeCalculator(joinTime, participantInput.ExitTime)
+	if err != nil {
+		log.Println(err, "Time calculation failed")
+	}
+	rewardReq := &monitPb.ParticipationRewardRequest{
+		UserID:         userID,
+		ConferenceID:   conferenceID,
+		ConferenceType: "Private",
+		Minutes:        minutes,
+	}
+	resp, err := s.MonitClient.ParticipationReward(ctx, rewardReq)
+	if err != nil {
+		log.Println(err, "Monitization server err")
+	}
 	response := pb.LeavePrivateConferenceResponse{
-		Result: "Exited from the conference",
+		Result: "Exited from the conference" + resp,
 	}
 	return &response, nil
 }

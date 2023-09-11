@@ -1,6 +1,9 @@
 package interfaces
 
-import "conference/pkg/common/utility"
+import (
+	"conference/pkg/common/utility"
+	"time"
+)
 
 type PrivateRepo interface {
 	CreatePrivateSchedule(utility.ScheduleConference) (uint, error)
@@ -12,6 +15,7 @@ type PrivateRepo interface {
 	AddParticipantInPrivateRoom(utility.PrivateRoomParticipants) error
 	BlockPrivateParticipant(string, string) error
 	RemovePrivateParticipant(string, string) error
+	GetJoinTime(string, string) (time.Time, error)
 	UpdatePrivateParticipantExitTime(utility.PrivateRoomParticipants) error
 	CheckType(string) (string, error)
 	CheckPrivateInterest(string) (string, error)
