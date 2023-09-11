@@ -41,3 +41,12 @@ func (a *monitizationClient) HealthCheck(ctx context.Context, req *pb.Request) (
 	}
 	return resp, nil
 }
+
+func (a *monitizationClient) ParticipationReward(ctx context.Context, req *pb.ParticipationRewardRequest) (string, error) {
+	resp, err := a.Client.ParticipationReward(ctx, req)
+	if err != nil {
+		log.Println(err)
+		return "", err
+	}
+	return resp.Result, nil
+}

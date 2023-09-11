@@ -8,7 +8,7 @@ import "google/protobuf/timestamp.proto";
 
 service Monitization{
     rpc HealthCheck(Request) returns (Response){}
-    rpc ConferenceParticipationReward(ParticipationRewardRequest) returns(ParticipationRewardResponse){}
+    rpc ParticipationReward(ParticipationRewardRequest) returns(ParticipationRewardResponse){}
     rpc UserRewardHistory(UserRewardHistoryRequest) returns (UserRewardHistoryResponse){}
     rpc GroupRewardHistory(GroupRewardHistoryRequest) returns (GroupRewardHistoryResponse){}
     rpc UserWatchHour(UserWatchHourRequest) returns (UserWatchHourResponse){}

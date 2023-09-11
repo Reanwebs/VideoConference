@@ -189,6 +189,21 @@ func (c *conferenceRepo) UpdatePrivateParticipantExitTime(input utility.PrivateR
 	}
 }
 
+func (c *conferenceRepo) GetJoinTime(conferenceID string, userID string) (time.Time, error) {
+	query := `
+        SELECT join_time
+        FROM private_room_participants
+        WHERE conference_id = ? AND user_id = ?`
+
+	var joinTime time.Time
+	err := c.DB.Raw(query, conferenceID, userID).Row().Scan(&joinTime)
+	if err != nil {
+		return time.Time{}, err
+	}
+
+	return joinTime, nil
+}
+
 func (c *conferenceRepo) RemovePrivateParticipant(conferenceID string, userID string) error {
 	query := `
         DELETE FROM private_room_participants
