@@ -401,7 +401,7 @@ func Test_GetJoinTime(t *testing.T) {
 		{
 			name: "join time retrieved",
 			stub: func(mockSQL sqlmock.Sqlmock) {
-				expectedQuery := `^SELECT join_time FROM private_room_participants WHERE conference_id = ? AND user_id = ?`
+				expectedQuery := `^SELECT join_time FROM private_room_participants WHERE conference_id = \$1 AND user_id = \$2`
 				mockSQL.ExpectQuery(expectedQuery).
 					WithArgs(conferenceID, userID).
 					WillReturnRows(sqlmock.NewRows([]string{"join_time"}).AddRow(joinTime))
