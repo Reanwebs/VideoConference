@@ -46,14 +46,16 @@ func (c *conferenceRepo) CreatePrivateSchedule(input utility.ScheduleConference)
 
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
 	query := `
-        INSERT INTO private_rooms (user_id,conference_id, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO private_rooms (user_id,conference_id,sdp_offer,ice_candidate, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         RETURNING id`
 
 	var id uint
 	err := c.DB.Raw(query,
 		input.UserID,
 		input.ConferenceID,
+		input.SdpOffer,
+		input.IceCandidate,
 		input.Type,
 		input.Title,
 		input.Description,
@@ -118,6 +120,21 @@ func (c *conferenceRepo) CheckPrivateParticipantPermission(conferenceID string, 
 		}
 	}
 	return permission, nil
+}
+
+func (c *conferenceRepo) GetSdpOffer(conferenceID string) (string, error) {
+	query := `
+        SELECT sdp_offer
+        FROM private_rooms
+        WHERE conference_id = ?`
+
+	var sdpOffer string
+	err := c.DB.Raw(query, conferenceID).Row().Scan(&sdpOffer)
+	if err != nil {
+		return "", err
+	}
+
+	return sdpOffer, nil
 }
 
 func (c *conferenceRepo) AddParticipantInPrivateRoom(input utility.PrivateRoomParticipants) error {

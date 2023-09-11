@@ -44,6 +44,7 @@ func (c *conferenceRepo) CreatePublicRoom(input utility.PublicRoom) error {
 		return err
 	}
 	return nil
+
 }
 
 func (c *conferenceRepo) AddParticipantInPublicRoom(input utility.PublicRoomParticipants) error {

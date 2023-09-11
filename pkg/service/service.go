@@ -15,7 +15,10 @@ import (
 	"math/rand"
 	"time"
 
+	"github.com/golang/protobuf/ptypes"
+	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jinzhu/copier"
+	"gorm.io/gorm"
 )
 
 var (
@@ -200,17 +203,42 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 		}
 		return &response, errors.New("Participant permission denied")
 	}
-	if currentParticipants < participantLimit {
-		response = pb.JoinPrivateConferenceResponse{
-			Result: "Join request send",
-		}
-		return &response, nil
-	} else {
+	if currentParticipants >= participantLimit {
 		response = pb.JoinPrivateConferenceResponse{
 			Result: "Participant limit exceeded",
 		}
 		return &response, errors.New("Participant limit exceeded")
 	}
+	sdpOffer, err := s.PrivateRepo.GetSdpOffer(conferenceID)
+	if err != nil {
+		response = pb.JoinPrivateConferenceResponse{
+			Result: "Retrieving sdpoffer from room failed",
+		}
+		return &response, errors.New("Retrieving sdpoffer from room failed")
+	}
+	participantInput := utility.PrivateRoomParticipants{
+		Model:        gorm.Model{},
+		UserID:       req.UserID,
+		ConferenceID: req.ConferenceID,
+		SdpAnswer:    "",
+		IceCandidate: "",
+		Permission:   true,
+		CamStatus:    "active",
+		MicStatus:    "active",
+		JoinTime:     time.Now(),
+		ExitTime:     time.Time{},
+		Role:         "",
+	}
+	if err = s.PrivateRepo.AddParticipantInPrivateRoom(participantInput); err != nil {
+		response = pb.JoinPrivateConferenceResponse{
+			Result: "Adding participant in room failed",
+		}
+		return &response, errors.New("Adding participant in room failed")
+	}
+	response = pb.JoinPrivateConferenceResponse{
+		Result: sdpOffer,
+	}
+	return &response, nil
 }
 
 func (s *ConferenceServer) JoinGroupConference(ctx context.Context, req *pb.JoinGroupConferenceRequest) (*pb.JoinGroupConferenceResponse, error) {
@@ -517,13 +545,22 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
+	ts := &timestamp.Timestamp{
+		Seconds: 1694113200,
+		Nanos:   0,
+	}
+	t, err := ptypes.Timestamp(ts)
+	if err != nil {
+		fmt.Println("Error converting Timestamp:", err)
+
+	}
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
 	}
 	input.ScheduleID = uid
-	// input.Time = input.Time
+	input.Time = t
 	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
 	if err != nil {
 		return nil, err
@@ -537,7 +574,9 @@ func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *p
 
 func (s *ConferenceServer) ScheduleGroupConference(ctx context.Context, req *pb.ScheduleGroupConferenceRequest) (*pb.ScheduleGroupConferenceResponse, error) {
 	var input utility.ScheduleGroupConference
-	copier.Copy(&input, req)
+	if err = copier.Copy(&input, req); err != nil {
+
+	}
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err

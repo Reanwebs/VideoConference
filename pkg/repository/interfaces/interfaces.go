@@ -8,6 +8,7 @@ type PrivateRepo interface {
 	CheckPrivateLimit(string) (uint, error)
 	CountPrivateParticipants(string) (uint, error)
 	CheckPrivateParticipantPermission(string, string) (bool, error)
+	GetSdpOffer(string) (string, error)
 	AddParticipantInPrivateRoom(utility.PrivateRoomParticipants) error
 	BlockPrivateParticipant(string, string) error
 	RemovePrivateParticipant(string, string) error
