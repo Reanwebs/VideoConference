@@ -112,16 +112,17 @@ message StartPrivateConferenceRequest {
     bool   chat        = 7;
     bool   broadcast   = 8;
     int32  participantlimit = 9;
- }
+    string sdpOffer    = 10; 
+}
 
 message StartPrivateConferenceResponse {
    string  Result = 1;
    string  conferenceID = 2;
 
- }
+}
 
 
- message StartGroupConferenceRequest{
+message StartGroupConferenceRequest{
     string userID  = 1;
     string groupID = 2;
     string title   = 3;
@@ -131,12 +132,13 @@ message StartPrivateConferenceResponse {
     bool   chat        = 7;
     bool   broadcast   = 8;
     int32  participantlimit = 9;
- }
+    string sdpOffer    = 10; 
+}
 
- message StartGroupConferenceResponse{
+message StartGroupConferenceResponse{
     string Result = 1;
     string ConferenceID = 2;
- }
+}
 
 message StartPublicConferenceRequest{
     string userID  = 1;
@@ -148,6 +150,7 @@ message StartPublicConferenceRequest{
     bool   chat        = 8;
     bool   broadcast   = 9;
     int32  participantlimit = 10;
+    string sdpOffer    = 11; 
 }
 
 message StartPublicConferenceResponse{
@@ -160,11 +163,12 @@ message StartPublicConferenceResponse{
  message JoinPrivateConferenceRequest {
    string userID       = 1;
    string  conferenceID = 2;
- }
+}
 
 message JoinPrivateConferenceResponse {
    string result = 1;
- }
+   string sdpOffer =2;
+}
 
 message JoinGroupConferenceRequest{
    string userID       = 1;
@@ -174,7 +178,8 @@ message JoinGroupConferenceRequest{
 
 message JoinGroupConferenceResponse {
    string result = 1;
- }
+   string sdpOffer =2;
+}
 
 message JoinPublicConferenceRequest{
    string userID       = 1;
@@ -183,6 +188,7 @@ message JoinPublicConferenceRequest{
 
 message JoinPublicConferenceResponse{
     string result = 1;
+    string sdpOffer =2;
 }
 
 

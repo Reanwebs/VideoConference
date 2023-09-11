@@ -31,6 +31,8 @@ func Test_CreatePrivateRoom(t *testing.T) {
 				input: utility.PrivateRoom{
 					UserID:           "yourUserID",
 					ConferenceID:     "conferenceUID",
+					SdpOffer:         "sdpOfferString",
+					IceCandidate:     "iceCandidateString",
 					Type:             "conferenceType",
 					Title:            "Conference Title",
 					Description:      "Conference Description",
@@ -43,7 +45,7 @@ func Test_CreatePrivateRoom(t *testing.T) {
 			stub: func(mockSQL sqlmock.Sqlmock) {
 
 				expectedQuery := `^INSERT INTO private_rooms(.+)$`
-				mockSQL.ExpectQuery(expectedQuery).WithArgs("yourUserID", "conferenceUID", "conferenceType", "Conference Title", "Conference Description", "Conference Interest", true, true, true, 100, time.Time{}, time.Time{}).
+				mockSQL.ExpectQuery(expectedQuery).WithArgs("yourUserID", "conferenceUID", "sdpOfferString", "iceCandidateString", "conferenceType", "Conference Title", "Conference Description", "Conference Interest", true, true, true, 100, time.Time{}, time.Time{}).
 					WillReturnRows(sqlmock.NewRows([]string{"id"}).AddRow(1))
 
 			},
@@ -195,6 +197,49 @@ func Test_CheckPrivateParticipantPermission(t *testing.T) {
 			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
 
 			got, err := privateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
+
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, tt.wantErr, err)
+		})
+	}
+}
+
+func Test_GetSdpOffer(t *testing.T) {
+	conferenceID := "conf102"
+	sdpOffer := "sample_sdp_offer"
+
+	tests := []struct {
+		name    string
+		stub    func(mockSQL sqlmock.Sqlmock)
+		want    string
+		wantErr error
+	}{
+		{
+			name: "SDP offer retrieved",
+			stub: func(mockSQL sqlmock.Sqlmock) {
+				expectedQuery := `^SELECT sdp_offer FROM private_rooms WHERE conference_id = ?`
+				mockSQL.ExpectQuery(expectedQuery).WithArgs(conferenceID).
+					WillReturnRows(sqlmock.NewRows([]string{"sdp_offer"}).AddRow(sdpOffer))
+			},
+			want:    sdpOffer,
+			wantErr: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mockDB, mockSQL, _ := sqlmock.New()
+			defer mockDB.Close()
+
+			gormDB, _ := gorm.Open(postgres.New(postgres.Config{
+				Conn: mockDB,
+			}), &gorm.Config{})
+
+			tt.stub(mockSQL)
+
+			privateRepo := repo.NewPrivateConferenceRepo(gormDB)
+
+			got, err := privateRepo.GetSdpOffer(conferenceID)
 
 			assert.Equal(t, tt.want, got)
 			assert.Equal(t, tt.wantErr, err)

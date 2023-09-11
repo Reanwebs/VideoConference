@@ -9,6 +9,8 @@ import (
 type PrivateRoom struct {
 	gorm.Model
 	UserID           string
+	SdpOffer         string
+	IceCandidate     string
 	ConferenceID     string
 	Type             string `gorm:"column:type;default:'private'"`
 	Title            string
@@ -27,6 +29,8 @@ type PrivateRoomParticipants struct {
 	gorm.Model
 	UserID       string
 	ConferenceID string
+	SdpAnswer    string
+	IceCandidate string
 	Permission   bool
 	CamStatus    string
 	MicStatus    string
