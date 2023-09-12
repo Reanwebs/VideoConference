@@ -180,7 +180,7 @@ func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.St
 
 func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.JoinPrivateConferenceRequest) (*pb.JoinPrivateConferenceResponse, error) {
 	conferenceID := req.ConferenceID
-	userID := req.UserID
+	_ = req.UserID
 	response := pb.JoinPrivateConferenceResponse{}
 	participantLimit, err := s.PrivateRepo.CheckPrivateLimit(conferenceID)
 	if err != nil {
@@ -192,30 +192,30 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 
 		return nil, err
 	}
-	permission, err := s.PrivateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
-	if err != nil {
+	// permission, err := s.PrivateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
+	// if err != nil {
 
-		return nil, err
-	}
-	if permission == false {
-		response = pb.JoinPrivateConferenceResponse{
-			Result: "Participant permission denied",
-		}
-		return &response, errors.New("Participant permission denied")
-	}
+	// 	return nil, err
+	// }
+	// if permission == false {
+	// 	response = pb.JoinPrivateConferenceResponse{
+	// 		Result: "Participant permission denied",
+	// 	}
+	// 	return &response, errors.New("Participant permission denied")
+	// }
 	if currentParticipants >= participantLimit {
 		response = pb.JoinPrivateConferenceResponse{
 			Result: "Participant limit exceeded",
 		}
 		return &response, errors.New("Participant limit exceeded")
 	}
-	sdpOffer, err := s.PrivateRepo.GetSdpOffer(conferenceID)
-	if err != nil {
-		response = pb.JoinPrivateConferenceResponse{
-			Result: "Retrieving sdpoffer from room failed",
-		}
-		return &response, errors.New("Retrieving sdpoffer from room failed")
-	}
+	// sdpOffer, err := s.PrivateRepo.GetSdpOffer(conferenceID)
+	// if err != nil {
+	// 	response = pb.JoinPrivateConferenceResponse{
+	// 		Result: "Retrieving sdpoffer from room failed",
+	// 	}
+	// 	return &response, errors.New("Retrieving sdpoffer from room failed")
+	// }
 	participantInput := utility.PrivateRoomParticipants{
 		Model:        gorm.Model{},
 		UserID:       req.UserID,
@@ -236,7 +236,7 @@ func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.Jo
 		return &response, errors.New("Adding participant in room failed")
 	}
 	response = pb.JoinPrivateConferenceResponse{
-		Result: sdpOffer,
+		Result: "user added to conference room",
 	}
 	return &response, nil
 }
