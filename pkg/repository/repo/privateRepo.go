@@ -139,12 +139,13 @@ func (c *conferenceRepo) GetSdpOffer(conferenceID string) (string, error) {
 
 func (c *conferenceRepo) AddParticipantInPrivateRoom(input utility.PrivateRoomParticipants) error {
 	query := `
-        INSERT INTO private_room_participants (user_id, conference_id, cam_status, mic_status, join_time, exit_time, role, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+        INSERT INTO private_room_participants (user_id, conference_id,permission, cam_status, mic_status, join_time, exit_time, role, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	result := c.DB.Exec(query,
 		input.UserID,
 		input.ConferenceID,
+		input.Permission,
 		input.CamStatus,
 		input.MicStatus,
 		input.JoinTime,
