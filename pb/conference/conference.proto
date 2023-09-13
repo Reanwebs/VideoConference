@@ -11,23 +11,32 @@ service Conference{
   rpc SchedulePrivateConference(SchedulePrivateConferenceRequest) returns (SchedulePrivateConferenceResponse){}
   rpc ScheduleGroupConference(ScheduleGroupConferenceRequest) returns (ScheduleGroupConferenceResponse){}
   rpc SchedulePublicConference(SchedulePublicConferenceRequest)returns(SchedulePublicConferenceResponse){}
+
+  rpc ScheduledConference(ScheduledConferenceRequest) returns (ScheduledConferenceResponse){}
+  rpc CompletedSchedules(CompletedSchedulesRequest) returns (CompletedSchedulesResponse){}
+  
   rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
   rpc StartGroupConference (StartGroupConferenceRequest) returns (StartGroupConferenceResponse){}
   rpc StartPublicConference (StartPublicConferenceRequest) returns (StartPublicConferenceResponse){}
+
   rpc JoinPrivateConference (JoinPrivateConferenceRequest) returns (JoinPrivateConferenceResponse){}
   rpc JoinGroupConfernce (JoinGroupConferenceRequest) returns (JoinGroupConferenceResponse){}
   rpc JoinPublicConference (JoinPublicConferenceRequest) returns (JoinPublicConferenceResponse){}
+  
   rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
   rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
   rpc LeavePrivateConference(LeavePrivateConferenceRequest)returns (LeavePrivateConferenceResponse){}
   rpc LeaveGroupConference(LeaveGroupConferenceRequest)returns (LeaveGroupConferenceResponse){}
   rpc LeavePublicConference(LeavePublicConferenceRequest)returns (LeavePublicConferenceResponse){}
+  
   rpc RemovePrivateParticipant (RemovePrivateParticipantRequest) returns (RemovePrivateParticipantResponse){}
   rpc RemoveGroupParticipant (RemoveGroupParticipantRequest) returns (RemoveGroupParticipantResponse){}
   rpc RemovePublicParticipant (RemovePublicParticipantRequest) returns (RemovePublicParticipantResponse){}
+  
   rpc EndPrivateConference(EndPrivateConferenceRequest) returns (EndPrivateConferenceResponse){}
   rpc EndGroupConference(EndGroupConferenceRequest) returns (EndGroupConferenceResponse){}
   rpc EndPublicConference(EndPublicConferenceRequest) returns (EndPublicConferenceResponse){}
+  
   rpc ToggleCamera (ToggleCameraRequest) returns (ToggleCameraResponse){}
   rpc ToggleMic (ToggleMicRequest) returns (ToggleMicResponse){}
   rpc ToggleParticipantCamera(ToggleParticipantCameraRequest) returns (ToggleParticipantCameraResponse){}
@@ -74,7 +83,7 @@ message ScheduleGroupConferenceRequest {
     google.protobuf.Timestamp time = 8;
     string status      = 9;
     int32  duration    = 10;
- }
+}
 
 
 message ScheduleGroupConferenceResponse{
@@ -93,12 +102,46 @@ message SchedulePublicConferenceRequest {
     google.protobuf.Timestamp time = 8;
     string status      = 9;
     int32  duration    = 10;
- }
+}
 
 
 message SchedulePublicConferenceResponse{
     string Result = 1;
     string ScheduleID = 2;
+}
+
+
+message ScheduledConference{
+    string userID = 1;
+    string title  = 2;
+    string description = 3;
+    string interest    = 4;
+    bool   chat        = 5;
+    int32  participantlimit = 6;
+    google.protobuf.Timestamp time = 7;
+    string status                  = 8;
+    int32  durations               = 9;
+}
+
+
+
+message ScheduledConferenceRequest{
+    string UserID = 1;
+}
+
+message ScheduledConferenceResponse{
+   string Result = 1;
+   repeated ScheduledConference Data = 2;
+}
+
+
+message CompletedSchedulesRequest{
+    string UserID = 1;
+}
+
+message CompletedSchedulesResponse{
+   string Result = 1;
+   repeated ScheduledConference Data = 2;
 }
 
 // Start Conference

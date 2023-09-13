@@ -44,6 +44,26 @@ func (c *conferenceRepo) CreatePrivateSchedule(input utility.ScheduleConference)
 	return id, nil
 }
 
+func (c *conferenceRepo) GetPrivateSchedules(userID string) ([]utility.ScheduleConference, error) {
+	query := `
+        SELECT id, schedule_id, title, description, interest, time, duration
+        FROM schedule_conferences
+        WHERE user_id = ?`
+
+	var schedules []utility.ScheduleConference
+	err := c.DB.Raw(query, userID).Find(&schedules).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return schedules, nil
+}
+
+func (c *conferenceRepo) GetCompletedSchedules(userID string) ([]utility.ScheduleConference, error) {
+	return nil, nil
+}
+
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
 	query := `
         INSERT INTO private_rooms (user_id,conference_id,sdp_offer,ice_candidate, type, title, description, interest, recording, chat, broadcast, participantlimit, created_at, updated_at)

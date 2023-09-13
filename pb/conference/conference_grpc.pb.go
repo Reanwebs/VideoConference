@@ -23,6 +23,8 @@ const (
 	Conference_SchedulePrivateConference_FullMethodName = "/conference.Conference/SchedulePrivateConference"
 	Conference_ScheduleGroupConference_FullMethodName   = "/conference.Conference/ScheduleGroupConference"
 	Conference_SchedulePublicConference_FullMethodName  = "/conference.Conference/SchedulePublicConference"
+	Conference_ScheduledConference_FullMethodName       = "/conference.Conference/ScheduledConference"
+	Conference_CompletedSchedules_FullMethodName        = "/conference.Conference/CompletedSchedules"
 	Conference_StartPrivateConference_FullMethodName    = "/conference.Conference/StartPrivateConference"
 	Conference_StartGroupConference_FullMethodName      = "/conference.Conference/StartGroupConference"
 	Conference_StartPublicConference_FullMethodName     = "/conference.Conference/StartPublicConference"
@@ -54,6 +56,8 @@ type ConferenceClient interface {
 	SchedulePrivateConference(ctx context.Context, in *SchedulePrivateConferenceRequest, opts ...grpc.CallOption) (*SchedulePrivateConferenceResponse, error)
 	ScheduleGroupConference(ctx context.Context, in *ScheduleGroupConferenceRequest, opts ...grpc.CallOption) (*ScheduleGroupConferenceResponse, error)
 	SchedulePublicConference(ctx context.Context, in *SchedulePublicConferenceRequest, opts ...grpc.CallOption) (*SchedulePublicConferenceResponse, error)
+	ScheduledConference(ctx context.Context, in *ScheduledConferenceRequest, opts ...grpc.CallOption) (*ScheduledConferenceResponse, error)
+	CompletedSchedules(ctx context.Context, in *CompletedSchedulesRequest, opts ...grpc.CallOption) (*CompletedSchedulesResponse, error)
 	StartPrivateConference(ctx context.Context, in *StartPrivateConferenceRequest, opts ...grpc.CallOption) (*StartPrivateConferenceResponse, error)
 	StartGroupConference(ctx context.Context, in *StartGroupConferenceRequest, opts ...grpc.CallOption) (*StartGroupConferenceResponse, error)
 	StartPublicConference(ctx context.Context, in *StartPublicConferenceRequest, opts ...grpc.CallOption) (*StartPublicConferenceResponse, error)
@@ -115,6 +119,24 @@ func (c *conferenceClient) ScheduleGroupConference(ctx context.Context, in *Sche
 func (c *conferenceClient) SchedulePublicConference(ctx context.Context, in *SchedulePublicConferenceRequest, opts ...grpc.CallOption) (*SchedulePublicConferenceResponse, error) {
 	out := new(SchedulePublicConferenceResponse)
 	err := c.cc.Invoke(ctx, Conference_SchedulePublicConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) ScheduledConference(ctx context.Context, in *ScheduledConferenceRequest, opts ...grpc.CallOption) (*ScheduledConferenceResponse, error) {
+	out := new(ScheduledConferenceResponse)
+	err := c.cc.Invoke(ctx, Conference_ScheduledConference_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) CompletedSchedules(ctx context.Context, in *CompletedSchedulesRequest, opts ...grpc.CallOption) (*CompletedSchedulesResponse, error) {
+	out := new(CompletedSchedulesResponse)
+	err := c.cc.Invoke(ctx, Conference_CompletedSchedules_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -318,6 +340,8 @@ type ConferenceServer interface {
 	SchedulePrivateConference(context.Context, *SchedulePrivateConferenceRequest) (*SchedulePrivateConferenceResponse, error)
 	ScheduleGroupConference(context.Context, *ScheduleGroupConferenceRequest) (*ScheduleGroupConferenceResponse, error)
 	SchedulePublicConference(context.Context, *SchedulePublicConferenceRequest) (*SchedulePublicConferenceResponse, error)
+	ScheduledConference(context.Context, *ScheduledConferenceRequest) (*ScheduledConferenceResponse, error)
+	CompletedSchedules(context.Context, *CompletedSchedulesRequest) (*CompletedSchedulesResponse, error)
 	StartPrivateConference(context.Context, *StartPrivateConferenceRequest) (*StartPrivateConferenceResponse, error)
 	StartGroupConference(context.Context, *StartGroupConferenceRequest) (*StartGroupConferenceResponse, error)
 	StartPublicConference(context.Context, *StartPublicConferenceRequest) (*StartPublicConferenceResponse, error)
@@ -357,6 +381,12 @@ func (UnimplementedConferenceServer) ScheduleGroupConference(context.Context, *S
 }
 func (UnimplementedConferenceServer) SchedulePublicConference(context.Context, *SchedulePublicConferenceRequest) (*SchedulePublicConferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method SchedulePublicConference not implemented")
+}
+func (UnimplementedConferenceServer) ScheduledConference(context.Context, *ScheduledConferenceRequest) (*ScheduledConferenceResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ScheduledConference not implemented")
+}
+func (UnimplementedConferenceServer) CompletedSchedules(context.Context, *CompletedSchedulesRequest) (*CompletedSchedulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CompletedSchedules not implemented")
 }
 func (UnimplementedConferenceServer) StartPrivateConference(context.Context, *StartPrivateConferenceRequest) (*StartPrivateConferenceResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StartPrivateConference not implemented")
@@ -502,6 +532,42 @@ func _Conference_SchedulePublicConference_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConferenceServer).SchedulePublicConference(ctx, req.(*SchedulePublicConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_ScheduledConference_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ScheduledConferenceRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).ScheduledConference(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_ScheduledConference_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).ScheduledConference(ctx, req.(*ScheduledConferenceRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_CompletedSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CompletedSchedulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).CompletedSchedules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_CompletedSchedules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).CompletedSchedules(ctx, req.(*CompletedSchedulesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -906,6 +972,14 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "SchedulePublicConference",
 			Handler:    _Conference_SchedulePublicConference_Handler,
+		},
+		{
+			MethodName: "ScheduledConference",
+			Handler:    _Conference_ScheduledConference_Handler,
+		},
+		{
+			MethodName: "CompletedSchedules",
+			Handler:    _Conference_CompletedSchedules_Handler,
 		},
 		{
 			MethodName: "StartPrivateConference",

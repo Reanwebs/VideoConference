@@ -622,6 +622,48 @@ func (s *ConferenceServer) SchedulePublicConference(ctx context.Context, req *pb
 	return &response, nil
 }
 
+func (s *ConferenceServer) ScheduledConference(ctx context.Context, req *pb.ScheduledConferenceRequest) (*pb.ScheduledConferenceResponse, error) {
+	userID := req.UserID
+
+	resp, err := s.PrivateRepo.GetPrivateSchedules(userID)
+	if err != nil {
+		response := pb.ScheduledConferenceResponse{
+			Result: "Schedules conference not found",
+		}
+		return &response, errors.New("Get private schedules")
+	}
+	var pbSchedules []*pb.ScheduledConference
+	for _, data := range resp {
+		pbdata := &pb.ScheduledConference{
+			UserID:      data.UserId,
+			Title:       data.Title,
+			Description: data.Description,
+			Interest:    data.Interest,
+			Status:      data.Status,
+			Durations:   int32(data.Duration),
+		}
+		pbSchedules = append(pbSchedules, pbdata)
+	}
+
+	response := &pb.ScheduledConferenceResponse{
+		Data: pbSchedules,
+	}
+	return response, nil
+}
+
+func (s *ConferenceServer) CompletedSchedules(ctx context.Context, req *pb.CompletedSchedulesRequest) (*pb.CompletedSchedulesResponse, error) {
+	userID := req.UserID
+
+	_, err := s.PrivateRepo.GetCompletedSchedules(userID)
+	if err != nil {
+		response := pb.CompletedSchedulesResponse{
+			Result: "Completed schedules not found",
+		}
+		return &response, errors.New("Get complete schedules")
+	}
+	return nil, nil
+}
+
 // not implimented
 
 func (s *ConferenceServer) ToggleCamera(ctx context.Context, req *pb.ToggleCameraRequest) (*pb.ToggleCameraResponse, error) {

@@ -252,6 +252,7 @@ func Test_AddParticipantInPrivateRoom(t *testing.T) {
 	participantInput := utility.PrivateRoomParticipants{
 		UserID:       "yourUserID",
 		ConferenceID: "conf102",
+		Permission:   true,
 		CamStatus:    "on",
 		MicStatus:    "off",
 		JoinTime:     time.Now(),
@@ -269,7 +270,7 @@ func Test_AddParticipantInPrivateRoom(t *testing.T) {
 			stub: func(mockSQL sqlmock.Sqlmock) {
 				expectedQuery := `^INSERT INTO private_room_participants(.+)$`
 				mockSQL.ExpectExec(expectedQuery).
-					WithArgs("yourUserID", "conf102", "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
+					WithArgs("yourUserID", "conf102", true, "on", "off", sqlmock.AnyArg(), sqlmock.AnyArg(), "participant", sqlmock.AnyArg(), sqlmock.AnyArg()).
 					WillReturnResult(sqlmock.NewResult(0, 1))
 			},
 			wantErr: nil,
