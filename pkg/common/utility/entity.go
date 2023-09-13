@@ -110,6 +110,7 @@ type ScheduleConference struct {
 	ParticipantLimit uint
 	Time             time.Time
 	Duration         time.Duration
+	Status           string
 }
 
 type ScheduleGroupConference struct {

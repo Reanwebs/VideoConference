@@ -7,6 +7,8 @@ import (
 
 type PrivateRepo interface {
 	CreatePrivateSchedule(utility.ScheduleConference) (uint, error)
+	GetPrivateSchedules(string) ([]utility.ScheduleConference, error)
+	GetCompletedSchedules(string) ([]utility.ScheduleConference, error)
 	CreatePrivateRoom(utility.PrivateRoom) (uint, error)
 	CheckPrivateLimit(string) (uint, error)
 	CountPrivateParticipants(string) (uint, error)
