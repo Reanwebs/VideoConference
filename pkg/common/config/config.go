@@ -11,6 +11,8 @@ type Config struct {
 	DbPassword string `mapstructure:"DB_PASSWORD"`
 	AuthUrl    string `mapstructure:"AUTH_SERVER_URL"`
 	MonitUrl   string `mapstructure:"MONITIZATION_SERVER_URL"`
+	Email      string `mapstructure:"EMAIL"`
+	AppPass    string `mapstructure:"EMAIL_APP_PASS"`
 }
 
 func LoadConfig() (config Config, err error) {
@@ -28,4 +30,5 @@ func LoadConfig() (config Config, err error) {
 		return
 	}
 	return
+
 }

@@ -8,10 +8,10 @@ import (
 
 type PrivateRoom struct {
 	gorm.Model
-	UserID           string
+	UserID           string `gorm:"not null"`
 	SdpOffer         string
 	IceCandidate     string
-	ConferenceID     string
+	ConferenceID     string `gorm:"unique;not null"`
 	Type             string `gorm:"column:type;default:'private'"`
 	Title            string
 	Description      string
@@ -42,7 +42,7 @@ type PrivateRoomParticipants struct {
 type GroupRoom struct {
 	gorm.Model
 	UserID           string
-	ConferenceID     string
+	ConferenceID     string `gorm:"unique;not null"`
 	GroupID          string
 	Type             string `gorm:"column:type;default:'group'"`
 	Title            string
@@ -73,7 +73,7 @@ type GroupRoomParticipants struct {
 type PublicRoom struct {
 	gorm.Model
 	UserID           string
-	ConferenceID     string
+	ConferenceID     string `gorm:"unique;not null"`
 	Type             string `gorm:"column:type;default:'public'"`
 	Title            string
 	Description      string
