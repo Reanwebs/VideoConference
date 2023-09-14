@@ -138,3 +138,12 @@ type SchedulePublicConference struct {
 	Time        time.Time
 	Duration    time.Duration
 }
+
+type ScheduleEmail struct {
+	Subject     string
+	Content     string
+	To          []string
+	Cc          []string
+	Bcc         []string
+	AttachFiles []string
+}

@@ -70,7 +70,12 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 	if err != nil {
 		return nil, err
 	}
-	input.ConferenceID = uid
+	if req.ScheduledID != "" {
+		input.ConferenceID = req.ScheduledID
+	} else {
+		input.ConferenceID = uid
+	}
+
 	_, err = s.PrivateRepo.CreatePrivateRoom(input)
 	if err != nil {
 
@@ -555,6 +560,7 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
+	emailSender := utility.NewGmailSender("Rean-Connect", "reanwebpvt@gmail.com", "xhokpnyxibwxxquz")
 	ts := &timestamp.Timestamp{
 		Seconds: 1694113200,
 		Nanos:   0,
@@ -575,6 +581,16 @@ func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *p
 	if err != nil {
 		return nil, err
 	}
+	emailContent, err := emailSender.MakeHostContent("Private Conference", t, input.Title, input.Description, uid, "Rean Connect")
+	emailInput := &utility.ScheduleEmail{
+		Subject:     "Conference Scheduled",
+		Content:     emailContent,
+		To:          []string{"edwinsibyrajakumary@gmail.com"},
+		Cc:          []string{},
+		Bcc:         []string{},
+		AttachFiles: []string{},
+	}
+	err = emailSender.SendEmail(emailInput)
 	response := pb.SchedulePrivateConferenceResponse{
 		Result:     "Conference scheduled",
 		ScheduleID: uid,
