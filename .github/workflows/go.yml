@@ -27,7 +27,3 @@ jobs:
     - name: Test
       run: go test -v ./...
     
-    - name: Load .env File
-      run: |
-          curl -o .env https://raw.githubusercontent.com/Reanwebs/VideoConference/main/.env
-          cat .env  
