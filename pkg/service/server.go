@@ -20,6 +20,7 @@ func NewGrpcServer(cfg config.Config, server pb.ConferenceServer) *Server {
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
 	}
+
 	grpcServer := grpc.NewServer()
 	reflection.Register(grpcServer)
 	pb.RegisterConferenceServer(grpcServer, server)

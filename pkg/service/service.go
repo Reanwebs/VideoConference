@@ -6,6 +6,7 @@ import (
 	monitPb "conference/pb/monitization"
 	"conference/pkg/client/auth"
 	monit "conference/pkg/client/monitization"
+	"conference/pkg/common/config"
 	"conference/pkg/common/utility"
 	"conference/pkg/repository/interfaces"
 	"context"
@@ -18,12 +19,21 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jinzhu/copier"
+	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
 )
 
 var (
-	err error
+	err    error
+	Config config.Config
 )
+
+func init() {
+	Config, err = config.LoadConfig()
+	if err != nil {
+		log.Fatalln(err)
+	}
+}
 
 type ConferenceServer struct {
 	pb.UnimplementedConferenceServer
@@ -65,6 +75,10 @@ func (s *ConferenceServer) HealthCheck(ctx context.Context, req *pb.Request) (*p
 func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.StartPrivateConferenceRequest) (*pb.StartPrivateConferenceResponse, error) {
 	traceID := ctx.Value("traceID")
 	var input utility.PrivateRoom
+
+	if req.UserID == "" && req.Participantlimit < 1 {
+		return nil, errors.New("userId is nill or less participant limit")
+	}
 	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
@@ -104,6 +118,9 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.StartGroupConferenceRequest) (*pb.StartGroupConferenceResponse, error) {
 	traceID := ctx.Value("traceID")
 	var input utility.GroupRoom
+	if req.UserID == "" && req.Participantlimit < 1 {
+		return nil, errors.New("userId is nill or less participant limit")
+	}
 	copier.Copy(&input, req)
 	request := &authpb.GroupHostPermissionRequest{}
 	resp, err := s.AuthClient.GroupHostPermission(ctx, request)
@@ -146,6 +163,9 @@ func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.Sta
 func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.StartPublicConferenceRequest) (*pb.StartPublicConferenceResponse, error) {
 	var input utility.PublicRoom
 	traceID := ctx.Value("traceID")
+	if req.UserID == "" && req.Participantlimit < 1 {
+		return nil, errors.New("userId is nill or less participant limit")
+	}
 	request := &authpb.PublicHostPermissionRequest{}
 	resp, err := s.AuthClient.PublicHostPermission(ctx, request)
 	if err != nil {
@@ -560,7 +580,7 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
-	emailSender := utility.NewGmailSender("Rean-Connect", "reanwebpvt@gmail.com", "xhokpnyxibwxxquz")
+	emailSender := utility.NewGmailSender("Rean-Connect", Config.Email, Config.AppPass)
 	ts := &timestamp.Timestamp{
 		Seconds: 1694113200,
 		Nanos:   0,
@@ -650,17 +670,21 @@ func (s *ConferenceServer) ScheduledConference(ctx context.Context, req *pb.Sche
 	}
 	var pbSchedules []*pb.ScheduledConference
 	for _, data := range resp {
+		timeStamp := timestamppb.New(data.Time)
 		pbdata := &pb.ScheduledConference{
-			UserID:      data.UserID,
-			Title:       data.Title,
-			Description: data.Description,
-			Interest:    data.Interest,
-			Status:      data.Status,
-			Durations:   int32(data.Duration),
+			UserID:           data.UserID,
+			ScheduleID:       data.ScheduleID,
+			Title:            data.Title,
+			Description:      data.Description,
+			Interest:         data.Interest,
+			Participantlimit: int32(data.ParticipantLimit),
+			Time:             timeStamp,
+			Status:           data.Status,
+			Durations:        int32(data.Duration),
 		}
 		pbSchedules = append(pbSchedules, pbdata)
 	}
-
+	fmt.Println(pbSchedules)
 	response := &pb.ScheduledConferenceResponse{
 		Data: pbSchedules,
 	}
