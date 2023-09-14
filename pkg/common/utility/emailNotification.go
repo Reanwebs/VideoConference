@@ -3,6 +3,7 @@ package utility
 import (
 	"fmt"
 	"net/smtp"
+	"time"
 
 	"github.com/jordan-wright/email"
 )
@@ -13,7 +14,8 @@ const (
 )
 
 type EmailSender interface {
-	SendEmail(subject string, content string, to []string, cc []string, bcc []string, attachFiles []string) error
+	SendEmail(*ScheduleEmail) error
+	MakeHostContent(conferenceType string, Time time.Time, Title string, Agenda string, Id string, Regards string) (string, error)
 }
 
 type GmailSender struct {
@@ -30,16 +32,16 @@ func NewGmailSender(name string, fromEmailAddress string, fromEmailPassword stri
 	}
 }
 
-func (sender *GmailSender) SendEmail(subject string, content string, to []string, cc []string, bcc []string, attachFiles []string) error {
+func (sender GmailSender) SendEmail(input *ScheduleEmail) error {
 	e := email.NewEmail()
 	e.From = fmt.Sprintf("%s <%s>", sender.name, sender.fromEmailAddress)
-	e.Subject = subject
-	e.HTML = []byte(content)
-	e.To = to
-	e.Cc = cc
-	e.Bcc = bcc
+	e.Subject = input.Subject
+	e.HTML = []byte(input.Content)
+	e.To = input.To
+	e.Cc = input.Cc
+	e.Bcc = input.Bcc
 
-	for _, f := range attachFiles {
+	for _, f := range input.AttachFiles {
 		_, err := e.AttachFile(f)
 		if err != nil {
 			return fmt.Errorf("failed to attach file %s: %w", f, err)
@@ -48,4 +50,28 @@ func (sender *GmailSender) SendEmail(subject string, content string, to []string
 
 	smtpAuth := smtp.PlainAuth("", sender.fromEmailAddress, sender.fromEmailPassword, smtpAuthAddress)
 	return e.Send(smtpServerAddress, smtpAuth)
+}
+
+func (sender GmailSender) MakeHostContent(conferenceType string, Time time.Time, Title string, Agenda string, id string, Regards string) (string, error) {
+	TimeStr := Time.Format("2006-01-02 15:04:05")
+
+	Content := `
+Hi,
+
+We are excited to confirm that your conference has been successfully scheduled on our website.
+Details:
+- ` + conferenceType + `
+- ` + TimeStr + `
+- ` + Agenda + `
+- ` + id + `
+
+If you have any questions or need to make any changes, please feel free to reach out to us. We're here to assist you every step of the way.
+
+Thank you for choosing our platform to schedule your conference. We look forward to a successful event!
+
+Best regards,
+` + Regards + `
+`
+
+	return Content, nil
 }

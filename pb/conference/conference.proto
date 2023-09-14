@@ -148,6 +148,7 @@ message CompletedSchedulesResponse{
 
 message StartPrivateConferenceRequest {
     string userID  = 1;
+    string scheduledID = 2;
     string title   = 3;
     string description = 4;
     string interest    = 5;
@@ -168,14 +169,15 @@ message StartPrivateConferenceResponse {
 message StartGroupConferenceRequest{
     string userID  = 1;
     string groupID = 2;
-    string title   = 3;
-    string description = 4;
-    string interest    = 5;
-    bool   recording   = 6;
-    bool   chat        = 7;
-    bool   broadcast   = 8;
-    int32  participantlimit = 9;
-    string sdpOffer    = 10; 
+    string scheduledID = 3;
+    string title   = 4;
+    string description = 5;
+    string interest    = 6;
+    bool   recording   = 7;
+    bool   chat        = 8;
+    bool   broadcast   = 9;
+    int32  participantlimit = 10;
+    string sdpOffer    = 11; 
 }
 
 message StartGroupConferenceResponse{
@@ -185,6 +187,7 @@ message StartGroupConferenceResponse{
 
 message StartPublicConferenceRequest{
     string userID  = 1;
+    string scheduledID = 2;
     string title   = 3;
     string description = 4;
     string interest    = 5;
