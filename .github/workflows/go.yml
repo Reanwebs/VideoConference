@@ -20,9 +20,14 @@ jobs:
       uses: actions/setup-go@v4
       with:
         go-version: '1.21.0'
-
+    
     - name: Build
       run: go build -v ./...
 
     - name: Test
       run: go test -v ./...
+    
+    - name: Load .env File
+      run: |
+          curl -o .env https://raw.githubusercontent.com/Reanwebs/VideoConference/main/.env
+          cat .env  
