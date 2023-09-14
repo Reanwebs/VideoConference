@@ -635,7 +635,7 @@ func (s *ConferenceServer) ScheduledConference(ctx context.Context, req *pb.Sche
 	var pbSchedules []*pb.ScheduledConference
 	for _, data := range resp {
 		pbdata := &pb.ScheduledConference{
-			UserID:      data.UserId,
+			UserID:      data.UserID,
 			Title:       data.Title,
 			Description: data.Description,
 			Interest:    data.Interest,

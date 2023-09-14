@@ -102,7 +102,7 @@ type PublicRoomParticipants struct {
 
 type ScheduleConference struct {
 	gorm.Model
-	UserId           string
+	UserID           string
 	ScheduleID       string
 	Title            string
 	Description      string
