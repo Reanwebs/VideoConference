@@ -28,7 +28,7 @@ func (c *conferenceRepo) CreatePrivateSchedule(input utility.ScheduleConference)
 
 	var id uint
 	err := c.DB.Raw(query,
-		input.UserId,
+		input.UserID,
 		input.ScheduleID,
 		input.Title,
 		input.Description,
