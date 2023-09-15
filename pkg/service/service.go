@@ -24,16 +24,8 @@ import (
 )
 
 var (
-	err    error
-	Config config.Config
+	err error
 )
-
-// func init() {
-// 	Config, err = config.LoadConfig()
-// 	if err != nil {
-// 		log.Fatalln(err)
-// 	}
-// }
 
 type ConferenceServer struct {
 	pb.UnimplementedConferenceServer
@@ -110,6 +102,17 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 		log.Fatal(err, traceID)
 		return nil, err
 	}
+	emailSender := utility.NewGmailSender("Rean-Connect", s.Cfg.Email, s.Cfg.AppPass)
+	emailContent, err := emailSender.MakeConferenceContent("Private Conference", time.Now(), input.Title, input.Description, uid, "Rean Connect")
+	emailInput := &utility.ScheduleEmail{
+		Subject:     "Conference Started",
+		Content:     emailContent,
+		To:          []string{"edwinsibyrajakumary@gmail.com"},
+		Cc:          []string{},
+		Bcc:         []string{},
+		AttachFiles: []string{},
+	}
+	err = emailSender.SendEmail(emailInput)
 	response := pb.StartPrivateConferenceResponse{
 		ConferenceID: input.ConferenceID,
 	}
