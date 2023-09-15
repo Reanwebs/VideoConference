@@ -28,12 +28,12 @@ var (
 	Config config.Config
 )
 
-func init() {
-	Config, err = config.LoadConfig()
-	if err != nil {
-		log.Fatalln(err)
-	}
-}
+// func init() {
+// 	Config, err = config.LoadConfig()
+// 	if err != nil {
+// 		log.Fatalln(err)
+// 	}
+// }
 
 type ConferenceServer struct {
 	pb.UnimplementedConferenceServer
@@ -42,15 +42,17 @@ type ConferenceServer struct {
 	PrivateRepo interfaces.PrivateRepo
 	GroupRepo   interfaces.GroupRepo
 	PublicRepo  interfaces.PublicRepo
+	Cfg         config.Config
 }
 
-func NewConferenceServer(authClient auth.AuthClient, monitClient monit.MonitizationClient, pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo) *ConferenceServer {
+func NewConferenceServer(authClient auth.AuthClient, monitClient monit.MonitizationClient, pRepo interfaces.PrivateRepo, gRepo interfaces.GroupRepo, puRepo interfaces.PublicRepo, cfg config.Config) *ConferenceServer {
 	return &ConferenceServer{
 		AuthClient:  authClient,
 		MonitClient: monitClient,
 		PrivateRepo: pRepo,
 		GroupRepo:   gRepo,
 		PublicRepo:  puRepo,
+		Cfg:         cfg,
 	}
 }
 
@@ -580,7 +582,7 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
-	emailSender := utility.NewGmailSender("Rean-Connect", Config.Email, Config.AppPass)
+	emailSender := utility.NewGmailSender("Rean-Connect", s.Cfg.Email, s.Cfg.AppPass)
 	ts := &timestamp.Timestamp{
 		Seconds: 1694113200,
 		Nanos:   0,
