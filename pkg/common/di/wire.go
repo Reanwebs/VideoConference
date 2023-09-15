@@ -38,7 +38,7 @@ func InitializeAPI(cfg config.Config) (*service.Server, error) {
 		return nil, err
 	}
 
-	usecase := service.NewConferenceServer(authClient, monitClient, PrivateRepo, GroupRepo, PublicRepo)
+	usecase := service.NewConferenceServer(authClient, monitClient, PrivateRepo, GroupRepo, PublicRepo, cfg)
 
 	server := service.NewGrpcServer(cfg, usecase)
 
