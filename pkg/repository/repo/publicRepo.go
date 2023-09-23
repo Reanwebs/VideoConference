@@ -42,6 +42,31 @@ func (c *conferenceRepo) CreateStreamRoom(input utility.StreamRoom) error {
 	return nil
 }
 
+func (c *conferenceRepo) GetStream(streamID string) (utility.StreamRoom, error) {
+	var stream utility.StreamRoom
+
+	query := `
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        FROM stream_rooms
+        WHERE stream_id = ?`
+
+	result := c.DB.Raw(query, streamID).Row().Scan(
+		&stream.HostID,
+		&stream.StreamID,
+		&stream.Title,
+		&stream.Description,
+		&stream.ThumbnailID,
+		&stream.Interest,
+		&stream.Status,
+	)
+
+	if result != nil {
+		return utility.StreamRoom{}, result
+	}
+
+	return stream, nil
+}
+
 func (c *conferenceRepo) UpdateStreamRoom(streamID string, hostID string, status string) error {
 	query := `
 	UPDATE stream_rooms
