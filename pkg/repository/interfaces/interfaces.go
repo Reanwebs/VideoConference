@@ -40,6 +40,8 @@ type GroupRepo interface {
 type PublicRepo interface {
 	CreateStreamRoom(utility.StreamRoom) error
 	GetStream(string) (utility.StreamRoom, error)
+	GetStreamList() ([]utility.StreamRoom, error)
+	GetSortedStreamList(string) ([]utility.StreamRoom, error)
 	UpdateStreamRoom(string, string, string) error
 	AddStreamParticipants(utility.StreamRoomParticipants) error
 	UpdateStreamParticipants(utility.StreamRoomParticipants) error

@@ -283,6 +283,13 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 	return res, nil
 }
 
+func (s *ConferenceServer) StopStream(ctx context.Context, req *pb.StopStreamRequest) (*pb.StopStreamResponse, error) {
+	if err := s.PublicRepo.UpdateStreamRoom(req.StreamID, req.HostID, "Ended"); err != nil {
+		return nil, err
+	}
+	return &pb.StopStreamResponse{Result: "stream ended"}, nil
+}
+
 func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamRequest) (*pb.GetStreamResponse, error) {
 	response, err := s.PublicRepo.GetStream(req.StreamID)
 	if err != nil {
@@ -298,6 +305,38 @@ func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamReque
 		AvatarID:    response.AvatarID,
 		UserName:    response.UserName,
 	}, nil
+}
+
+func (s *ConferenceServer) GetOngoingStreams(ctx context.Context, req *pb.GetOngoingStreamsRequest) (*pb.GetOngoingStreamsResponse, error) {
+	var result []utility.StreamRoom
+	var err error
+	if req.Sort != "" {
+		result, err = s.PublicRepo.GetStreamList()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		result, err = s.PublicRepo.GetSortedStreamList(req.Sort)
+		if err != nil {
+			return nil, err
+		}
+	}
+	response := &pb.GetOngoingStreamsResponse{
+		Response: make([]*pb.GetStreamResponse, len(result)),
+	}
+
+	for i, stream := range result {
+		response.Response[i] = &pb.GetStreamResponse{
+			HostID:      stream.HostID,
+			Title:       stream.Title,
+			Discription: stream.Description,
+			Interest:    stream.Interest,
+			ThubnailID:  stream.ThumbnailID,
+			AvatarID:    stream.AvatarID,
+			UserName:    stream.UserName,
+		}
+	}
+	return response, nil
 }
 
 func (s *ConferenceServer) JoinStream(ctx context.Context, req *pb.JoinStreamRequest) (*pb.JoinStreamResponse, error) {

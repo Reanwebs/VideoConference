@@ -16,6 +16,7 @@ service Conference{
   rpc EndPrivateConference(EndPrivateConferenceRequest) returns (EndPrivateConferenceResponse){}
   rpc StartStream(StartStreamRequest) returns (StartStreamResponse){}
   rpc GetStream(GetStreamRequest)returns(GetStreamResponse){}
+  rpc GetOngoingStreams(GetOngoingStreamsRequest) returns (GetOngoingStreamsResponse){}
   rpc StopStream(StopStreamRequest) returns (StopStreamResponse){}
   rpc JoinStream(JoinStreamRequest) returns (JoinStreamResponse){}
   rpc LeaveStream(LeaveStreamRequest) returns (LeaveStreamResponse){}
@@ -171,6 +172,13 @@ message StopStreamResponse{
     string Result = 1;
 }
 
+message GetOngoingStreamsRequest{
+    string Sort  = 1;
+}
+
+message GetOngoingStreamsResponse{
+    repeated GetStreamResponse Response = 1;
+}
 
 //Uncompleted
 

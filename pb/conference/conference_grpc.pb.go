@@ -28,6 +28,7 @@ const (
 	Conference_EndPrivateConference_FullMethodName      = "/conference.Conference/EndPrivateConference"
 	Conference_StartStream_FullMethodName               = "/conference.Conference/StartStream"
 	Conference_GetStream_FullMethodName                 = "/conference.Conference/GetStream"
+	Conference_GetOngoingStreams_FullMethodName         = "/conference.Conference/GetOngoingStreams"
 	Conference_StopStream_FullMethodName                = "/conference.Conference/StopStream"
 	Conference_JoinStream_FullMethodName                = "/conference.Conference/JoinStream"
 	Conference_LeaveStream_FullMethodName               = "/conference.Conference/LeaveStream"
@@ -60,6 +61,7 @@ type ConferenceClient interface {
 	EndPrivateConference(ctx context.Context, in *EndPrivateConferenceRequest, opts ...grpc.CallOption) (*EndPrivateConferenceResponse, error)
 	StartStream(ctx context.Context, in *StartStreamRequest, opts ...grpc.CallOption) (*StartStreamResponse, error)
 	GetStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (*GetStreamResponse, error)
+	GetOngoingStreams(ctx context.Context, in *GetOngoingStreamsRequest, opts ...grpc.CallOption) (*GetOngoingStreamsResponse, error)
 	StopStream(ctx context.Context, in *StopStreamRequest, opts ...grpc.CallOption) (*StopStreamResponse, error)
 	JoinStream(ctx context.Context, in *JoinStreamRequest, opts ...grpc.CallOption) (*JoinStreamResponse, error)
 	LeaveStream(ctx context.Context, in *LeaveStreamRequest, opts ...grpc.CallOption) (*LeaveStreamResponse, error)
@@ -162,6 +164,15 @@ func (c *conferenceClient) StartStream(ctx context.Context, in *StartStreamReque
 func (c *conferenceClient) GetStream(ctx context.Context, in *GetStreamRequest, opts ...grpc.CallOption) (*GetStreamResponse, error) {
 	out := new(GetStreamResponse)
 	err := c.cc.Invoke(ctx, Conference_GetStream_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *conferenceClient) GetOngoingStreams(ctx context.Context, in *GetOngoingStreamsRequest, opts ...grpc.CallOption) (*GetOngoingStreamsResponse, error) {
+	out := new(GetOngoingStreamsResponse)
+	err := c.cc.Invoke(ctx, Conference_GetOngoingStreams_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -334,6 +345,7 @@ type ConferenceServer interface {
 	EndPrivateConference(context.Context, *EndPrivateConferenceRequest) (*EndPrivateConferenceResponse, error)
 	StartStream(context.Context, *StartStreamRequest) (*StartStreamResponse, error)
 	GetStream(context.Context, *GetStreamRequest) (*GetStreamResponse, error)
+	GetOngoingStreams(context.Context, *GetOngoingStreamsRequest) (*GetOngoingStreamsResponse, error)
 	StopStream(context.Context, *StopStreamRequest) (*StopStreamResponse, error)
 	JoinStream(context.Context, *JoinStreamRequest) (*JoinStreamResponse, error)
 	LeaveStream(context.Context, *LeaveStreamRequest) (*LeaveStreamResponse, error)
@@ -384,6 +396,9 @@ func (UnimplementedConferenceServer) StartStream(context.Context, *StartStreamRe
 }
 func (UnimplementedConferenceServer) GetStream(context.Context, *GetStreamRequest) (*GetStreamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetStream not implemented")
+}
+func (UnimplementedConferenceServer) GetOngoingStreams(context.Context, *GetOngoingStreamsRequest) (*GetOngoingStreamsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetOngoingStreams not implemented")
 }
 func (UnimplementedConferenceServer) StopStream(context.Context, *StopStreamRequest) (*StopStreamResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method StopStream not implemented")
@@ -607,6 +622,24 @@ func _Conference_GetStream_Handler(srv interface{}, ctx context.Context, dec fun
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ConferenceServer).GetStream(ctx, req.(*GetStreamRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Conference_GetOngoingStreams_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetOngoingStreamsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ConferenceServer).GetOngoingStreams(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Conference_GetOngoingStreams_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ConferenceServer).GetOngoingStreams(ctx, req.(*GetOngoingStreamsRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -959,6 +992,10 @@ var Conference_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetStream",
 			Handler:    _Conference_GetStream_Handler,
+		},
+		{
+			MethodName: "GetOngoingStreams",
+			Handler:    _Conference_GetOngoingStreams_Handler,
 		},
 		{
 			MethodName: "StopStream",
