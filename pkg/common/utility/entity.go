@@ -39,6 +39,26 @@ type PrivateRoomParticipants struct {
 	Role         string
 }
 
+type StreamRoom struct {
+	gorm.Model
+	HostID      string
+	StreamID    string
+	StreamId    string
+	Title       string
+	Description string
+	ThumbnailID string
+	Interest    string
+	Status      string
+}
+
+type StreamRoomParticipants struct {
+	gorm.Model
+	StreamID      string
+	ParticipantID string
+	JoinTime      time.Time
+	LeaveTime     time.Time
+}
+
 type GroupRoom struct {
 	gorm.Model
 	UserID           string

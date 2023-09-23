@@ -38,6 +38,11 @@ type GroupRepo interface {
 }
 
 type PublicRepo interface {
+	CreateStreamRoom(utility.StreamRoom) error
+	UpdateStreamRoom(string, string, string) error
+	AddStreamParticipants(utility.StreamRoomParticipants) error
+	UpdateStreamParticipants(utility.StreamRoomParticipants) error
+	GetStreamJoinTime(string, string) (time.Time, error)
 	CreatePublicSchedule(utility.SchedulePublicConference) (uint, error)
 	CreatePublicRoom(utility.PublicRoom) error
 	AddParticipantInPublicRoom(utility.PublicRoomParticipants) error
