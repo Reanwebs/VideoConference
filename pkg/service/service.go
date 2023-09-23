@@ -268,6 +268,8 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 		ThumbnailID: req.ThubnailID,
 		Interest:    req.Interest,
 		Status:      "started",
+		AvatarID:    req.AvatarID,
+		UserName:    req.UserName,
 	}
 
 	if err := s.PublicRepo.CreateStreamRoom(input); err != nil {
@@ -281,15 +283,21 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 	return res, nil
 }
 
-func (s *ConferenceServer) StopStream(ctx context.Context, req *pb.StopStreamRequest) (*pb.StopStreamResponse, error) {
-
-	if err := s.PublicRepo.UpdateStreamRoom(req.StreamID, req.HostID, "Stopped"); err != nil {
+func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamRequest) (*pb.GetStreamResponse, error) {
+	response, err := s.PublicRepo.GetStream(req.StreamID)
+	if err != nil {
 		return nil, err
 	}
-	response := &pb.StopStreamResponse{
-		Result: "Stream Stopped",
-	}
-	return response, nil
+
+	return &pb.GetStreamResponse{
+		HostID:      response.HostID,
+		Title:       response.Title,
+		Discription: response.Description,
+		Interest:    response.Interest,
+		ThubnailID:  response.ThumbnailID,
+		AvatarID:    response.AvatarID,
+		UserName:    response.UserName,
+	}, nil
 }
 
 func (s *ConferenceServer) JoinStream(ctx context.Context, req *pb.JoinStreamRequest) (*pb.JoinStreamResponse, error) {

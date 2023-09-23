@@ -49,6 +49,8 @@ type StreamRoom struct {
 	ThumbnailID string
 	Interest    string
 	Status      string
+	AvatarID    string
+	UserName    string
 }
 
 type StreamRoomParticipants struct {
