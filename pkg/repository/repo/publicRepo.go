@@ -67,6 +67,39 @@ func (c *conferenceRepo) GetStream(streamID string) (utility.StreamRoom, error) 
 	return stream, nil
 }
 
+func (c *conferenceRepo) GetStreamList() ([]utility.StreamRoom, error) {
+	var streams []utility.StreamRoom
+
+	query := `
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        FROM stream_rooms
+        WHERE status != 'Ended'`
+
+	result := c.DB.Raw(query).Find(&streams)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return streams, nil
+}
+func (c *conferenceRepo) GetSortedStreamList(filter string) ([]utility.StreamRoom, error) {
+	var streams []utility.StreamRoom
+
+	query := `
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        FROM stream_rooms
+        WHERE status != 'Ended' AND interest = ?`
+
+	result := c.DB.Raw(query, filter).Find(&streams)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return streams, nil
+}
+
 func (c *conferenceRepo) UpdateStreamRoom(streamID string, hostID string, status string) error {
 	query := `
 	UPDATE stream_rooms
