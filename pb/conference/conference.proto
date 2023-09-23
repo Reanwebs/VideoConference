@@ -9,39 +9,31 @@ import "google/protobuf/timestamp.proto";
 service Conference{
   rpc HealthCheck(Request) returns (Response);
   rpc SchedulePrivateConference(SchedulePrivateConferenceRequest) returns (SchedulePrivateConferenceResponse){}
+  rpc ScheduledConference(ScheduledConferenceRequest) returns (ScheduledConferenceResponse){}
+  rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
+  rpc JoinPrivateConference (JoinPrivateConferenceRequest) returns (JoinPrivateConferenceResponse){}
+  rpc LeavePrivateConference(LeavePrivateConferenceRequest)returns (LeavePrivateConferenceResponse){}
+  rpc EndPrivateConference(EndPrivateConferenceRequest) returns (EndPrivateConferenceResponse){}
+  rpc StartStream(StartStreamRequest) returns (StartStreamResponse){}
+  rpc StopStream(StopStreamRequest) returns (StopStreamResponse){}
+  rpc JoinStream(JoinStreamRequest) returns (JoinStreamResponse){}
+  rpc LeaveStream(LeaveStreamRequest) returns (LeaveStreamResponse){}
+
+
   rpc ScheduleGroupConference(ScheduleGroupConferenceRequest) returns (ScheduleGroupConferenceResponse){}
   rpc SchedulePublicConference(SchedulePublicConferenceRequest)returns(SchedulePublicConferenceResponse){}
-
-  rpc ScheduledConference(ScheduledConferenceRequest) returns (ScheduledConferenceResponse){}
   rpc CompletedSchedules(CompletedSchedulesRequest) returns (CompletedSchedulesResponse){}
-  
-  rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
   rpc StartGroupConference (StartGroupConferenceRequest) returns (StartGroupConferenceResponse){}
   rpc StartPublicConference (StartPublicConferenceRequest) returns (StartPublicConferenceResponse){}
-
-  rpc JoinPrivateConference (JoinPrivateConferenceRequest) returns (JoinPrivateConferenceResponse){}
   rpc JoinGroupConfernce (JoinGroupConferenceRequest) returns (JoinGroupConferenceResponse){}
   rpc JoinPublicConference (JoinPublicConferenceRequest) returns (JoinPublicConferenceResponse){}
-  
-  rpc AcceptJoining (AcceptJoiningRequest) returns (AcceptJoiningResponse){}
-  rpc DeclineJoining (DeclineJoiningRequest) returns (DeclineJoiningResponse){}
-  rpc LeavePrivateConference(LeavePrivateConferenceRequest)returns (LeavePrivateConferenceResponse){}
   rpc LeaveGroupConference(LeaveGroupConferenceRequest)returns (LeaveGroupConferenceResponse){}
   rpc LeavePublicConference(LeavePublicConferenceRequest)returns (LeavePublicConferenceResponse){}
-  
   rpc RemovePrivateParticipant (RemovePrivateParticipantRequest) returns (RemovePrivateParticipantResponse){}
   rpc RemoveGroupParticipant (RemoveGroupParticipantRequest) returns (RemoveGroupParticipantResponse){}
   rpc RemovePublicParticipant (RemovePublicParticipantRequest) returns (RemovePublicParticipantResponse){}
-  
-  rpc EndPrivateConference(EndPrivateConferenceRequest) returns (EndPrivateConferenceResponse){}
   rpc EndGroupConference(EndGroupConferenceRequest) returns (EndGroupConferenceResponse){}
   rpc EndPublicConference(EndPublicConferenceRequest) returns (EndPublicConferenceResponse){}
-  
-  rpc ToggleCamera (ToggleCameraRequest) returns (ToggleCameraResponse){}
-  rpc ToggleMic (ToggleMicRequest) returns (ToggleMicResponse){}
-  rpc ToggleParticipantCamera(ToggleParticipantCameraRequest) returns (ToggleParticipantCameraResponse){}
-  rpc ToggleParticipantMic(ToggleParticipantMicRequest) returns (ToggleParticipantMicResponse){}
-  
 }
 
 
@@ -71,6 +63,99 @@ message SchedulePrivateConferenceResponse{
     string Result = 1;
     string ScheduleID = 2;
 }
+
+message ScheduledConference{
+    string userID = 1;
+    string ScheduleID =2;
+    string title  = 3;
+    string description = 4;
+    string interest    = 5;
+    bool   chat        = 6;
+    int32  participantlimit = 7;
+    google.protobuf.Timestamp time = 8;
+    string status                  = 9;
+    int32  durations               = 10;
+}
+
+message ScheduledConferenceRequest{
+    string UserID = 1;
+}
+
+message ScheduledConferenceResponse{
+   string Result = 1;
+   repeated ScheduledConference Data = 2;
+}
+
+message StartPrivateConferenceRequest {
+    string userID  = 1;
+    string title   = 3;
+    string description = 4;
+    string interest    = 5;
+    bool   recording   = 6;
+    bool   chat        = 7;
+    bool   broadcast   = 8;
+    int32  participantlimit = 9;
+    string sdpOffer = 10;
+    string email = 11;
+    string scheduledID =12;
+}
+  
+message StartPrivateConferenceResponse {
+    string  Result = 1;
+    string  conferenceID = 2;
+}
+
+message CompletedSchedulesRequest{
+    string UserID = 1;
+}
+
+message CompletedSchedulesResponse{
+   string Result = 1;
+   repeated ScheduledConference Data = 2;
+}
+
+message StartStreamRequest {
+    string HostID = 1;
+    string Title = 2;
+    string Discription = 3;
+    string Interest = 4;
+    string ThubnailID = 5;
+}
+
+message StartStreamResponse{
+    string StreamID = 1;
+    string  Result = 2;
+}
+
+message JoinStreamRequest{
+    string PartcipantID = 1;
+    string StreamID = 2;
+}
+
+message JoinStreamResponse{
+    string Result = 1;
+}
+
+message LeaveStreamRequest{
+    string StreamID = 1;
+    string PartcipantID = 2;
+}
+
+message LeaveStreamResponse{
+    string Result = 1;
+}
+
+message StopStreamRequest{
+    string StreamID = 1;
+    string HostID = 2;
+}
+
+message StopStreamResponse{
+    string Result = 1;
+}
+
+
+//Uncompleted
 
 message ScheduleGroupConferenceRequest {
     string groupID  = 1;
@@ -109,63 +194,6 @@ message SchedulePublicConferenceResponse{
     string Result = 1;
     string ScheduleID = 2;
 }
-
-
-message ScheduledConference{
-    string userID = 1;
-    string ScheduleID =2;
-    string title  = 3;
-    string description = 4;
-    string interest    = 5;
-    bool   chat        = 6;
-    int32  participantlimit = 7;
-    google.protobuf.Timestamp time = 8;
-    string status                  = 9;
-    int32  durations               = 10;
-}
-
-
-
-message ScheduledConferenceRequest{
-    string UserID = 1;
-}
-
-message ScheduledConferenceResponse{
-   string Result = 1;
-   repeated ScheduledConference Data = 2;
-}
-
-
-message CompletedSchedulesRequest{
-    string UserID = 1;
-}
-
-message CompletedSchedulesResponse{
-   string Result = 1;
-   repeated ScheduledConference Data = 2;
-}
-
-// Start Conference
-
-message StartPrivateConferenceRequest {
-    string userID  = 1;
-    string scheduledID = 2;
-    string title   = 3;
-    string description = 4;
-    string interest    = 5;
-    bool   recording   = 6;
-    bool   chat        = 7;
-    bool   broadcast   = 8;
-    int32  participantlimit = 9;
-    string sdpOffer    = 10; 
-}
-
-message StartPrivateConferenceResponse {
-   string  Result = 1;
-   string  conferenceID = 2;
-
-}
-
 
 message StartGroupConferenceRequest{
     string userID  = 1;

@@ -120,6 +120,225 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 	return &response, nil
 }
 
+func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.JoinPrivateConferenceRequest) (*pb.JoinPrivateConferenceResponse, error) {
+	conferenceID := req.ConferenceID
+	userID := req.UserID
+	response := pb.JoinPrivateConferenceResponse{}
+	participantLimit, err := s.PrivateRepo.CheckPrivateLimit(conferenceID)
+	if err != nil {
+
+		return nil, errors.Join(err, errors.New("Participant limit check"))
+	}
+	currentParticipants, err := s.PrivateRepo.CountPrivateParticipants(conferenceID)
+	if err != nil {
+
+		return nil, errors.Join(err, errors.New("Participant count check"))
+	}
+	permission, err := s.PrivateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
+	if err != nil {
+
+		return nil, errors.Join(err, errors.New("Permission check"))
+	}
+	if permission == false {
+		response = pb.JoinPrivateConferenceResponse{
+			Result: "Participant permission denied",
+		}
+		return &response, errors.New("Participant permission denied")
+	}
+	if currentParticipants >= participantLimit {
+		response = pb.JoinPrivateConferenceResponse{
+			Result: "Participant limit exceeded",
+		}
+		return &response, errors.New("Participant limit exceeded")
+	}
+	participantInput := utility.PrivateRoomParticipants{
+		Model:        gorm.Model{},
+		UserID:       req.UserID,
+		ConferenceID: req.ConferenceID,
+		SdpAnswer:    "",
+		IceCandidate: "",
+		Permission:   true,
+		CamStatus:    "active",
+		MicStatus:    "active",
+		JoinTime:     time.Now(),
+		ExitTime:     time.Time{},
+		Role:         "",
+	}
+	if err = s.PrivateRepo.AddParticipantInPrivateRoom(participantInput); err != nil {
+		response := pb.JoinPrivateConferenceResponse{
+			Result: "Adding participant in room failed",
+		}
+		return &response, errors.New("Adding participant in room failed")
+	}
+	response = pb.JoinPrivateConferenceResponse{
+		Result: "user added to conference room",
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.LeavePrivateConferenceRequest) (*pb.LeavePrivateConferenceResponse, error) {
+	userID := req.UserID
+	conferenceID := req.ConferenceID
+	participantInput := utility.PrivateRoomParticipants{
+		UserID:       userID,
+		ConferenceID: conferenceID,
+		ExitTime:     time.Now(),
+	}
+	if err = s.PrivateRepo.UpdatePrivateParticipantExitTime(participantInput); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	if err = s.PrivateRepo.RemovePrivateParticipant(conferenceID, userID); err != nil {
+		log.Fatal(err, ctx.Value("traceID"))
+		return nil, err
+	}
+	joinTime, err := s.PrivateRepo.GetJoinTime(conferenceID, userID)
+	if err != nil {
+		log.Println(err, "Get join time err")
+	}
+	minutes, err := utility.TimeCalculator(joinTime, participantInput.ExitTime)
+	if err != nil {
+		log.Println(err, "Time calculation failed")
+	}
+	rewardReq := &monitPb.ParticipationRewardRequest{
+		UserID:         userID,
+		ConferenceID:   conferenceID,
+		ConferenceType: "Private",
+		Minutes:        minutes,
+	}
+	resp, err := s.MonitClient.ParticipationReward(ctx, rewardReq)
+	if err != nil {
+		log.Println(err, "Monitization server err")
+	}
+	response := pb.LeavePrivateConferenceResponse{
+		Result: "Exited from the conference" + resp,
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
+	var input utility.ScheduleConference
+	emailSender := utility.NewGmailSender("Rean-Connect", s.Cfg.Email, s.Cfg.AppPass)
+	ts := &timestamp.Timestamp{
+		Seconds: 1694113200,
+		Nanos:   0,
+	}
+	t, err := ptypes.Timestamp(ts)
+	if err != nil {
+		fmt.Println("Error converting Timestamp:", err)
+
+	}
+	copier.Copy(&input, req)
+	uid, err := utility.UID(8)
+	if err != nil {
+		return nil, err
+	}
+	input.ScheduleID = uid
+	input.Time = t
+	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
+	if err != nil {
+		return nil, err
+	}
+	emailContent, err := emailSender.MakeHostContent("Private Conference", t, input.Title, input.Description, uid, "Rean Connect")
+	emailInput := &utility.ScheduleEmail{
+		Subject:     "Conference Scheduled",
+		Content:     emailContent,
+		To:          []string{"edwinsibyrajakumary@gmail.com"},
+		Cc:          []string{},
+		Bcc:         []string{},
+		AttachFiles: []string{},
+	}
+	err = emailSender.SendEmail(emailInput)
+	response := pb.SchedulePrivateConferenceResponse{
+		Result:     "Conference scheduled",
+		ScheduleID: uid,
+	}
+	return &response, nil
+}
+
+func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamRequest) (*pb.StartStreamResponse, error) {
+	uid, err := utility.UID(8)
+	if err != nil {
+		return nil, err
+	}
+	input := utility.StreamRoom{
+		StreamID:    uid,
+		HostID:      req.HostID,
+		Title:       req.Title,
+		ThumbnailID: req.ThubnailID,
+		Interest:    req.Interest,
+		Status:      "started",
+	}
+
+	if err := s.PublicRepo.CreateStreamRoom(input); err != nil {
+		return nil, err
+	}
+	res := &pb.StartStreamResponse{
+		StreamID: uid,
+		Result:   "Stream Started",
+	}
+
+	return res, nil
+}
+
+func (s *ConferenceServer) StopStream(ctx context.Context, req *pb.StopStreamRequest) (*pb.StopStreamResponse, error) {
+
+	if err := s.PublicRepo.UpdateStreamRoom(req.StreamID, req.HostID, "Stopped"); err != nil {
+		return nil, err
+	}
+	response := &pb.StopStreamResponse{
+		Result: "Stream Stopped",
+	}
+	return response, nil
+}
+
+func (s *ConferenceServer) JoinStream(ctx context.Context, req *pb.JoinStreamRequest) (*pb.JoinStreamResponse, error) {
+
+	input := utility.StreamRoomParticipants{
+		Model:         gorm.Model{},
+		StreamID:      req.StreamID,
+		ParticipantID: req.PartcipantID,
+		JoinTime:      time.Now(),
+	}
+	if err = s.PublicRepo.AddStreamParticipants(input); err != nil {
+		return nil, err
+	}
+	return &pb.JoinStreamResponse{Result: "Participant Added"}, nil
+}
+
+func (s *ConferenceServer) LeaveStream(ctx context.Context, req *pb.LeaveStreamRequest) (*pb.LeaveStreamResponse, error) {
+	input := utility.StreamRoomParticipants{
+		Model:         gorm.Model{},
+		StreamID:      req.StreamID,
+		ParticipantID: req.PartcipantID,
+		LeaveTime:     time.Now(),
+	}
+	if err = s.PublicRepo.UpdateStreamParticipants(input); err != nil {
+		return nil, err
+	}
+	joinTime, err := s.PublicRepo.GetStreamJoinTime(req.StreamID, req.PartcipantID)
+	if err != nil {
+		log.Println(err, "Get join time err")
+	}
+	minutes, err := utility.TimeCalculator(joinTime, time.Now())
+	if err != nil {
+		log.Println(err, "Time calculation failed")
+	}
+	rewardReq := &monitPb.ParticipationRewardRequest{
+		UserID:         req.PartcipantID,
+		ConferenceID:   req.StreamID,
+		ConferenceType: "Stream",
+		Minutes:        minutes,
+	}
+	resp, err := s.MonitClient.ParticipationReward(ctx, rewardReq)
+	if err != nil {
+		log.Println(err, "Monitization server err")
+	}
+	return &pb.LeaveStreamResponse{Result: "Participant Removed" + resp}, nil
+}
+
+//Uncompleted
+
 func (s *ConferenceServer) StartGroupConference(ctx context.Context, req *pb.StartGroupConferenceRequest) (*pb.StartGroupConferenceResponse, error) {
 	traceID := ctx.Value("traceID")
 	var input utility.GroupRoom
@@ -204,62 +423,6 @@ func (s *ConferenceServer) StartPublicConference(ctx context.Context, req *pb.St
 	response := pb.StartPublicConferenceResponse{
 		Result:       "conference room created",
 		ConferenceID: input.ConferenceID,
-	}
-	return &response, nil
-}
-
-func (s *ConferenceServer) JoinPrivateConference(ctx context.Context, req *pb.JoinPrivateConferenceRequest) (*pb.JoinPrivateConferenceResponse, error) {
-	conferenceID := req.ConferenceID
-	userID := req.UserID
-	response := pb.JoinPrivateConferenceResponse{}
-	participantLimit, err := s.PrivateRepo.CheckPrivateLimit(conferenceID)
-	if err != nil {
-
-		return nil, errors.Join(err, errors.New("Participant limit check"))
-	}
-	currentParticipants, err := s.PrivateRepo.CountPrivateParticipants(conferenceID)
-	if err != nil {
-
-		return nil, errors.Join(err, errors.New("Participant count check"))
-	}
-	permission, err := s.PrivateRepo.CheckPrivateParticipantPermission(conferenceID, userID)
-	if err != nil {
-
-		return nil, errors.Join(err, errors.New("Permission check"))
-	}
-	if permission == false {
-		response = pb.JoinPrivateConferenceResponse{
-			Result: "Participant permission denied",
-		}
-		return &response, errors.New("Participant permission denied")
-	}
-	if currentParticipants >= participantLimit {
-		response = pb.JoinPrivateConferenceResponse{
-			Result: "Participant limit exceeded",
-		}
-		return &response, errors.New("Participant limit exceeded")
-	}
-	participantInput := utility.PrivateRoomParticipants{
-		Model:        gorm.Model{},
-		UserID:       req.UserID,
-		ConferenceID: req.ConferenceID,
-		SdpAnswer:    "",
-		IceCandidate: "",
-		Permission:   true,
-		CamStatus:    "active",
-		MicStatus:    "active",
-		JoinTime:     time.Now(),
-		ExitTime:     time.Time{},
-		Role:         "",
-	}
-	if err = s.PrivateRepo.AddParticipantInPrivateRoom(participantInput); err != nil {
-		response := pb.JoinPrivateConferenceResponse{
-			Result: "Adding participant in room failed",
-		}
-		return &response, errors.New("Adding participant in room failed")
-	}
-	response = pb.JoinPrivateConferenceResponse{
-		Result: "user added to conference room",
 	}
 	return &response, nil
 }
@@ -466,46 +629,6 @@ func (s *ConferenceServer) RemovePublicParticipant(ctx context.Context, req *pb.
 	return &response, nil
 }
 
-func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.LeavePrivateConferenceRequest) (*pb.LeavePrivateConferenceResponse, error) {
-	userID := req.UserID
-	conferenceID := req.ConferenceID
-	participantInput := utility.PrivateRoomParticipants{
-		UserID:       userID,
-		ConferenceID: conferenceID,
-		ExitTime:     time.Now(),
-	}
-	if err = s.PrivateRepo.UpdatePrivateParticipantExitTime(participantInput); err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
-		return nil, err
-	}
-	if err = s.PrivateRepo.RemovePrivateParticipant(conferenceID, userID); err != nil {
-		log.Fatal(err, ctx.Value("traceID"))
-		return nil, err
-	}
-	joinTime, err := s.PrivateRepo.GetJoinTime(conferenceID, userID)
-	if err != nil {
-		log.Println(err, "Get join time err")
-	}
-	minutes, err := utility.TimeCalculator(joinTime, participantInput.ExitTime)
-	if err != nil {
-		log.Println(err, "Time calculation failed")
-	}
-	rewardReq := &monitPb.ParticipationRewardRequest{
-		UserID:         userID,
-		ConferenceID:   conferenceID,
-		ConferenceType: "Private",
-		Minutes:        minutes,
-	}
-	resp, err := s.MonitClient.ParticipationReward(ctx, rewardReq)
-	if err != nil {
-		log.Println(err, "Monitization server err")
-	}
-	response := pb.LeavePrivateConferenceResponse{
-		Result: "Exited from the conference" + resp,
-	}
-	return &response, nil
-}
-
 func (s *ConferenceServer) LeaveGroupConference(ctx context.Context, req *pb.LeaveGroupConferenceRequest) (*pb.LeaveGroupConferenceResponse, error) {
 	userID := req.UserID
 	conferenceID := req.ConferenceID
@@ -579,46 +702,6 @@ func (s *ConferenceServer) EndPublicConference(ctx context.Context, req *pb.EndP
 	}
 	response := pb.EndPublicConferenceResponse{
 		Result: "Conference ended",
-	}
-	return &response, nil
-}
-
-func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
-	var input utility.ScheduleConference
-	emailSender := utility.NewGmailSender("Rean-Connect", s.Cfg.Email, s.Cfg.AppPass)
-	ts := &timestamp.Timestamp{
-		Seconds: 1694113200,
-		Nanos:   0,
-	}
-	t, err := ptypes.Timestamp(ts)
-	if err != nil {
-		fmt.Println("Error converting Timestamp:", err)
-
-	}
-	copier.Copy(&input, req)
-	uid, err := utility.UID(8)
-	if err != nil {
-		return nil, err
-	}
-	input.ScheduleID = uid
-	input.Time = t
-	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
-	if err != nil {
-		return nil, err
-	}
-	emailContent, err := emailSender.MakeHostContent("Private Conference", t, input.Title, input.Description, uid, "Rean Connect")
-	emailInput := &utility.ScheduleEmail{
-		Subject:     "Conference Scheduled",
-		Content:     emailContent,
-		To:          []string{"edwinsibyrajakumary@gmail.com"},
-		Cc:          []string{},
-		Bcc:         []string{},
-		AttachFiles: []string{},
-	}
-	err = emailSender.SendEmail(emailInput)
-	response := pb.SchedulePrivateConferenceResponse{
-		Result:     "Conference scheduled",
-		ScheduleID: uid,
 	}
 	return &response, nil
 }

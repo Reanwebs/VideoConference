@@ -4,6 +4,7 @@ import (
 	"conference/pkg/common/utility"
 	"database/sql"
 	"errors"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -13,6 +14,102 @@ func NewPublicConferenceRepo(db *gorm.DB) *conferenceRepo {
 		DB: db,
 	}
 }
+
+// Stream functions
+
+func (c *conferenceRepo) CreateStreamRoom(input utility.StreamRoom) error {
+	query := `
+	INSERT INTO stream_rooms (host_id, stream_id, title, description, thumbnail_id, interest,status, created_at, updated_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	RETURNING id`
+
+	var id uint
+	err := c.DB.Raw(query,
+		input.HostID,
+		input.StreamID,
+		input.Title,
+		input.Description,
+		input.ThumbnailID,
+		input.Interest,
+		input.Status,
+		time.Now(),
+		time.Now(),
+	).Row().Scan(&id)
+
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *conferenceRepo) UpdateStreamRoom(streamID string, hostID string, status string) error {
+	query := `
+	UPDATE stream_rooms
+	SET status = ?, updated_at = ?
+	WHERE stream_id = ?`
+
+	result := c.DB.Exec(query,
+		status,
+		time.Now(),
+		streamID,
+	)
+
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (c *conferenceRepo) AddStreamParticipants(input utility.StreamRoomParticipants) error {
+	query := `
+	INSERT INTO stream_room_participants (stream_id, participant_id, join_time, leave_time)
+	VALUES (?, ?, ?, ?)`
+
+	result := c.DB.Exec(query,
+		input.StreamID,
+		input.ParticipantID,
+		input.JoinTime,
+		input.LeaveTime,
+	)
+
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (c *conferenceRepo) UpdateStreamParticipants(input utility.StreamRoomParticipants) error {
+	query := `
+        UPDATE stream_room_participants
+        SET leave_time = ?
+        WHERE stream_id = ? AND participant_id = ?`
+
+	result := c.DB.Exec(query,
+		input.LeaveTime,
+		input.StreamID,
+		input.ParticipantID,
+	)
+
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (c *conferenceRepo) GetStreamJoinTime(streamID string, userID string) (time.Time, error) {
+	var joinTime time.Time
+	query := `
+        SELECT join_time
+        FROM stream_room_participants
+        WHERE stream_id = ? AND participant_id = ?`
+
+	if err := c.DB.Raw(query, streamID, userID).Row().Scan(&joinTime); err != nil {
+		return time.Time{}, err
+	}
+	return joinTime, nil
+}
+
+// Conference functions
 
 func (c *conferenceRepo) CreatePublicSchedule(input utility.SchedulePublicConference) (uint, error) {
 	return 1, nil
@@ -44,7 +141,6 @@ func (c *conferenceRepo) CreatePublicRoom(input utility.PublicRoom) error {
 		return err
 	}
 	return nil
-
 }
 
 func (c *conferenceRepo) AddParticipantInPublicRoom(input utility.PublicRoomParticipants) error {
