@@ -44,6 +44,24 @@ func (c *conferenceRepo) CreateStreamRoom(input utility.StreamRoom) error {
 	return nil
 }
 
+func (c *conferenceRepo) FindStream(streamID string) error {
+	query := `
+	SELECT status
+	FROM stream_rooms
+	WHERE stream_id = ?`
+
+	var status string
+	err := c.DB.Raw(query, streamID).Row().Scan(&status)
+	if err != nil {
+
+		return errors.Join(errors.New("Stream not found"), err)
+	}
+	if status == "Ended" {
+		return errors.New("Stream ended")
+	}
+	return nil
+}
+
 func (c *conferenceRepo) GetStream(streamID string) (utility.StreamRoom, error) {
 	var stream utility.StreamRoom
 
