@@ -312,12 +312,12 @@ func (s *ConferenceServer) GetOngoingStreams(ctx context.Context, req *pb.GetOng
 	var result []utility.StreamRoom
 	var err error
 	if req.Sort != "" {
-		result, err = s.PublicRepo.GetStreamList()
+		result, err = s.PublicRepo.GetSortedStreamList(req.Sort)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		result, err = s.PublicRepo.GetSortedStreamList(req.Sort)
+		result, err = s.PublicRepo.GetStreamList()
 		if err != nil {
 			return nil, err
 		}
