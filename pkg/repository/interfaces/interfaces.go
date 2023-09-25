@@ -43,6 +43,7 @@ type PublicRepo interface {
 	GetStreamList() ([]utility.StreamRoom, error)
 	GetSortedStreamList(string) ([]utility.StreamRoom, error)
 	UpdateStreamRoom(string, string, string) error
+	FindStream(string) error
 	AddStreamParticipants(utility.StreamRoomParticipants) error
 	UpdateStreamParticipants(utility.StreamRoomParticipants) error
 	GetStreamJoinTime(string, string) (time.Time, error)

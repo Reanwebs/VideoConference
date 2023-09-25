@@ -342,7 +342,9 @@ func (s *ConferenceServer) GetOngoingStreams(ctx context.Context, req *pb.GetOng
 }
 
 func (s *ConferenceServer) JoinStream(ctx context.Context, req *pb.JoinStreamRequest) (*pb.JoinStreamResponse, error) {
-
+	if err = s.PublicRepo.FindStream(req.StreamID); err != nil {
+		return nil, err
+	}
 	input := utility.StreamRoomParticipants{
 		Model:         gorm.Model{},
 		StreamID:      req.StreamID,
