@@ -48,7 +48,7 @@ func (c *conferenceRepo) GetStream(streamID string) (utility.StreamRoom, error) 
 	var stream utility.StreamRoom
 
 	query := `
-        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status, avatar_id, user_name
         FROM stream_rooms
         WHERE stream_id = ?`
 
@@ -60,6 +60,8 @@ func (c *conferenceRepo) GetStream(streamID string) (utility.StreamRoom, error) 
 		&stream.ThumbnailID,
 		&stream.Interest,
 		&stream.Status,
+		&stream.AvatarID,
+		&stream.UserName,
 	)
 
 	if result != nil {
