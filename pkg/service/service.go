@@ -329,6 +329,7 @@ func (s *ConferenceServer) GetOngoingStreams(ctx context.Context, req *pb.GetOng
 	for i, stream := range result {
 		response.Response[i] = &pb.GetStreamResponse{
 			HostID:      stream.HostID,
+			StreamID:    stream.StreamID,
 			Title:       stream.Title,
 			Discription: stream.Description,
 			Interest:    stream.Interest,
