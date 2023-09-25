@@ -265,6 +265,7 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 		StreamID:    uid,
 		HostID:      req.HostID,
 		Title:       req.Title,
+		Description: req.Discription,
 		ThumbnailID: req.ThubnailID,
 		Interest:    req.Interest,
 		Status:      "started",

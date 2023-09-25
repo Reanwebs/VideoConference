@@ -41,22 +41,21 @@ type PrivateRoomParticipants struct {
 
 type StreamRoom struct {
 	gorm.Model
-	HostID      string
-	StreamID    string
-	StreamId    string
-	Title       string
-	Description string
-	ThumbnailID string
-	Interest    string
-	Status      string
+	HostID      string `gorm:"not null"`
+	StreamID    string `gorm:"not null"`
+	Title       string `gorm:"not null"`
+	Description string `gorm:"not null"`
+	ThumbnailID string `gorm:"not null"`
+	Interest    string `gorm:"not null"`
+	Status      string `gorm:"not null"`
 	AvatarID    string
-	UserName    string
+	UserName    string `gorm:"not null"`
 }
 
 type StreamRoomParticipants struct {
 	gorm.Model
-	StreamID      string
-	ParticipantID string
+	StreamID      string `gorm:"not null"`
+	ParticipantID string `gorm:"not null"`
 	JoinTime      time.Time
 	LeaveTime     time.Time
 }
