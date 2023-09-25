@@ -137,12 +137,13 @@ message GetStreamRequest{
 
 message GetStreamResponse{
     string HostID = 1;
-    string Title = 2;
-    string Discription = 3;
-    string Interest = 4;
-    string ThubnailID = 5;
-    string AvatarID   = 6;
-    string UserName   = 7;
+    string StreamID = 2;
+    string Title = 3;
+    string Discription = 4;
+    string Interest = 5;
+    string ThubnailID = 6;
+    string AvatarID   = 7;
+    string UserName   = 8;
 }
 
 message JoinStreamRequest{
