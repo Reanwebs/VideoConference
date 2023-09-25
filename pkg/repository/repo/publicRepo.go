@@ -59,7 +59,6 @@ func (c *conferenceRepo) FindStream(streamID string) error {
 	if status == "Ended" {
 		return errors.New("Stream ended")
 	}
-
 	return nil
 }
 
