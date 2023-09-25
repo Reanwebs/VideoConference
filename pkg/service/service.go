@@ -261,11 +261,11 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(req, "start stream request")
 	input := utility.StreamRoom{
 		StreamID:    uid,
 		HostID:      req.HostID,
 		Title:       req.Title,
+		Description: req.Discription,
 		ThumbnailID: req.ThubnailID,
 		Interest:    req.Interest,
 		Status:      "started",
@@ -296,8 +296,6 @@ func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamReque
 	if err != nil {
 		return nil, err
 	}
-
-	fmt.Println(response, "GetStream By ID ")
 
 	return &pb.GetStreamResponse{
 		HostID:      response.HostID,
