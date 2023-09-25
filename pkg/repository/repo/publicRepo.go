@@ -73,7 +73,7 @@ func (c *conferenceRepo) GetStreamList() ([]utility.StreamRoom, error) {
 	var streams []utility.StreamRoom
 
 	query := `
-        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status, avatar_id, user_name
         FROM stream_rooms
         WHERE status != 'Ended'`
 
@@ -89,7 +89,7 @@ func (c *conferenceRepo) GetSortedStreamList(filter string) ([]utility.StreamRoo
 	var streams []utility.StreamRoom
 
 	query := `
-        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status
+        SELECT host_id, stream_id, title, description, thumbnail_id, interest, status, avatar_id, user_name
         FROM stream_rooms
         WHERE status != 'Ended' AND interest = ?`
 

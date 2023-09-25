@@ -309,7 +309,6 @@ func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamReque
 }
 
 func (s *ConferenceServer) GetOngoingStreams(ctx context.Context, req *pb.GetOngoingStreamsRequest) (*pb.GetOngoingStreamsResponse, error) {
-	fmt.Println("get stream llist called")
 	var result []utility.StreamRoom
 	var err error
 	if req.Sort != "" {
