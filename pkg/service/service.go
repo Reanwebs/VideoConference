@@ -261,6 +261,7 @@ func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamR
 	if err != nil {
 		return nil, err
 	}
+	fmt.Println(req, "start stream request")
 	input := utility.StreamRoom{
 		StreamID:    uid,
 		HostID:      req.HostID,

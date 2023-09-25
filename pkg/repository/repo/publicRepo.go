@@ -19,8 +19,8 @@ func NewPublicConferenceRepo(db *gorm.DB) *conferenceRepo {
 
 func (c *conferenceRepo) CreateStreamRoom(input utility.StreamRoom) error {
 	query := `
-	INSERT INTO stream_rooms (host_id, stream_id, title, description, thumbnail_id, interest,status, created_at, updated_at)
-	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+	INSERT INTO stream_rooms (host_id, stream_id, title, description, thumbnail_id, interest,status,avatar_id,user_name, created_at, updated_at)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	RETURNING id`
 
 	var id uint
@@ -32,6 +32,8 @@ func (c *conferenceRepo) CreateStreamRoom(input utility.StreamRoom) error {
 		input.ThumbnailID,
 		input.Interest,
 		input.Status,
+		input.AvatarID,
+		input.UserName,
 		time.Now(),
 		time.Now(),
 	).Row().Scan(&id)
