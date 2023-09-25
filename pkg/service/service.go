@@ -296,6 +296,8 @@ func (s *ConferenceServer) GetStream(ctx context.Context, req *pb.GetStreamReque
 		return nil, err
 	}
 
+	fmt.Println(response, "GetStream By ID ")
+
 	return &pb.GetStreamResponse{
 		HostID:      response.HostID,
 		Title:       response.Title,

@@ -43,7 +43,6 @@ type StreamRoom struct {
 	gorm.Model
 	HostID      string
 	StreamID    string
-	StreamId    string
 	Title       string
 	Description string
 	ThumbnailID string
