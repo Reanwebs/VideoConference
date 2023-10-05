@@ -6,3 +6,5 @@ proto:
 	protoc -I ./pb ./pb/conference.proto --go_out=. --go-grpc_out=.
 test:
 	go test -v ./...
+docker-build:
+	sudo docker build -t edwinsiby/conference-server .
