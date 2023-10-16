@@ -107,7 +107,7 @@ func (s *ConferenceServer) StartPrivateConference(ctx context.Context, req *pb.S
 	emailInput := &utility.ScheduleEmail{
 		Subject:     "Conference Started",
 		Content:     emailContent,
-		To:          []string{"edwinsibyrajakumary@gmail.com"},
+		To:          []string{req.Email},
 		Cc:          []string{},
 		Bcc:         []string{},
 		AttachFiles: []string{},
