@@ -61,7 +61,19 @@ func (c *conferenceRepo) GetPrivateSchedules(userID string) ([]utility.ScheduleC
 }
 
 func (c *conferenceRepo) GetCompletedSchedules(userID string) ([]utility.ScheduleConference, error) {
-	return nil, nil
+	query := `
+        SELECT id, schedule_id, title, description, interest, time, duration
+        FROM schedule_conferences
+        WHERE user_id = ? AND status = 'completed'`
+
+	var completedSchedules []utility.ScheduleConference
+	err := c.DB.Raw(query, userID).Find(&completedSchedules).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return completedSchedules, nil
 }
 
 func (c *conferenceRepo) CreatePrivateRoom(input utility.PrivateRoom) (uint, error) {
