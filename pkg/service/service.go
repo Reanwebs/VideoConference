@@ -16,8 +16,6 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/jinzhu/copier"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
@@ -219,22 +217,27 @@ func (s *ConferenceServer) LeavePrivateConference(ctx context.Context, req *pb.L
 func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *pb.SchedulePrivateConferenceRequest) (*pb.SchedulePrivateConferenceResponse, error) {
 	var input utility.ScheduleConference
 	emailSender := utility.NewGmailSender("Rean-Connect", s.Cfg.Email, s.Cfg.AppPass)
-	ts := &timestamp.Timestamp{
-		Seconds: 1694113200,
-		Nanos:   0,
-	}
-	t, err := ptypes.Timestamp(ts)
+	t := time.Unix(req.Time.GetSeconds(), int64(req.Time.GetNanos()))
 	if err != nil {
 		fmt.Println("Error converting Timestamp:", err)
 
 	}
-	copier.Copy(&input, req)
 	uid, err := utility.UID(8)
 	if err != nil {
 		return nil, err
 	}
-	input.ScheduleID = uid
-	input.Time = t
+	input = utility.ScheduleConference{
+		Model:            gorm.Model{},
+		UserID:           req.UserID,
+		ScheduleID:       uid,
+		Title:            req.Title,
+		Description:      req.Description,
+		Interest:         req.Interest,
+		ParticipantLimit: uint(req.Participantlimit),
+		Time:             t,
+		Duration:         0,
+		Status:           req.Status,
+	}
 	_, err = s.PrivateRepo.CreatePrivateSchedule(input)
 	if err != nil {
 		return nil, err
@@ -254,6 +257,69 @@ func (s *ConferenceServer) SchedulePrivateConference(ctx context.Context, req *p
 		ScheduleID: uid,
 	}
 	return &response, nil
+}
+
+func (s *ConferenceServer) ScheduledConference(ctx context.Context, req *pb.ScheduledConferenceRequest) (*pb.ScheduledConferenceResponse, error) {
+	userID := req.UserID
+
+	resp, err := s.PrivateRepo.GetPrivateSchedules(userID)
+	if err != nil {
+		response := pb.ScheduledConferenceResponse{
+			Result: "Schedules conference not found",
+		}
+		return &response, errors.New("Get private schedules")
+	}
+	var pbSchedules []*pb.ScheduledConference
+	for _, data := range resp {
+		timeStamp := timestamppb.New(data.Time)
+		pbdata := &pb.ScheduledConference{
+			UserID:           req.UserID,
+			ScheduleID:       data.ScheduleID,
+			Title:            data.Title,
+			Description:      data.Description,
+			Interest:         data.Interest,
+			Participantlimit: int32(data.ParticipantLimit),
+			Time:             timeStamp,
+			Status:           data.Status,
+			Durations:        int32(data.Duration),
+		}
+		pbSchedules = append(pbSchedules, pbdata)
+	}
+	fmt.Println(pbSchedules)
+	response := &pb.ScheduledConferenceResponse{
+		Data: pbSchedules,
+	}
+	return response, nil
+}
+
+func (s *ConferenceServer) CompletedSchedules(ctx context.Context, req *pb.CompletedSchedulesRequest) (*pb.CompletedSchedulesResponse, error) {
+	userID := req.UserID
+
+	response, err := s.PrivateRepo.GetCompletedSchedules(userID)
+	if err != nil {
+		response := pb.CompletedSchedulesResponse{
+			Result: "Completed schedules not found",
+		}
+		return &response, errors.New("Get complete schedules")
+	}
+	completedSchedulesResponse := pb.CompletedSchedulesResponse{
+		Result: "Completed list",
+	}
+
+	for _, schedule := range response {
+		scheduledConference := &pb.ScheduledConference{
+			UserID:      schedule.UserID,
+			ScheduleID:  schedule.ScheduleID,
+			Title:       schedule.Title,
+			Description: schedule.Description,
+			Interest:    schedule.Interest,
+			Time:        timestamppb.New(schedule.Time),
+			Status:      schedule.Status,
+		}
+		completedSchedulesResponse.Data = append(completedSchedulesResponse.Data, scheduledConference)
+	}
+
+	return &completedSchedulesResponse, nil
 }
 
 func (s *ConferenceServer) StartStream(ctx context.Context, req *pb.StartStreamRequest) (*pb.StartStreamResponse, error) {
@@ -795,52 +861,6 @@ func (s *ConferenceServer) SchedulePublicConference(ctx context.Context, req *pb
 		ScheduleID: uid,
 	}
 	return &response, nil
-}
-
-func (s *ConferenceServer) ScheduledConference(ctx context.Context, req *pb.ScheduledConferenceRequest) (*pb.ScheduledConferenceResponse, error) {
-	userID := req.UserID
-
-	resp, err := s.PrivateRepo.GetPrivateSchedules(userID)
-	if err != nil {
-		response := pb.ScheduledConferenceResponse{
-			Result: "Schedules conference not found",
-		}
-		return &response, errors.New("Get private schedules")
-	}
-	var pbSchedules []*pb.ScheduledConference
-	for _, data := range resp {
-		timeStamp := timestamppb.New(data.Time)
-		pbdata := &pb.ScheduledConference{
-			UserID:           req.UserID,
-			ScheduleID:       data.ScheduleID,
-			Title:            data.Title,
-			Description:      data.Description,
-			Interest:         data.Interest,
-			Participantlimit: int32(data.ParticipantLimit),
-			Time:             timeStamp,
-			Status:           data.Status,
-			Durations:        int32(data.Duration),
-		}
-		pbSchedules = append(pbSchedules, pbdata)
-	}
-	fmt.Println(pbSchedules)
-	response := &pb.ScheduledConferenceResponse{
-		Data: pbSchedules,
-	}
-	return response, nil
-}
-
-func (s *ConferenceServer) CompletedSchedules(ctx context.Context, req *pb.CompletedSchedulesRequest) (*pb.CompletedSchedulesResponse, error) {
-	userID := req.UserID
-
-	_, err := s.PrivateRepo.GetCompletedSchedules(userID)
-	if err != nil {
-		response := pb.CompletedSchedulesResponse{
-			Result: "Completed schedules not found",
-		}
-		return &response, errors.New("Get complete schedules")
-	}
-	return nil, nil
 }
 
 // not implimented

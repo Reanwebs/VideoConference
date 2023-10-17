@@ -10,6 +10,7 @@ service Conference{
   rpc HealthCheck(Request) returns (Response);
   rpc SchedulePrivateConference(SchedulePrivateConferenceRequest) returns (SchedulePrivateConferenceResponse){}
   rpc ScheduledConference(ScheduledConferenceRequest) returns (ScheduledConferenceResponse){}
+  rpc CompletedSchedules(CompletedSchedulesRequest) returns (CompletedSchedulesResponse){}
   rpc StartPrivateConference (StartPrivateConferenceRequest) returns (StartPrivateConferenceResponse){}
   rpc JoinPrivateConference (JoinPrivateConferenceRequest) returns (JoinPrivateConferenceResponse){}
   rpc LeavePrivateConference(LeavePrivateConferenceRequest)returns (LeavePrivateConferenceResponse){}
@@ -24,7 +25,6 @@ service Conference{
 
   rpc ScheduleGroupConference(ScheduleGroupConferenceRequest) returns (ScheduleGroupConferenceResponse){}
   rpc SchedulePublicConference(SchedulePublicConferenceRequest)returns(SchedulePublicConferenceResponse){}
-  rpc CompletedSchedules(CompletedSchedulesRequest) returns (CompletedSchedulesResponse){}
   rpc StartGroupConference (StartGroupConferenceRequest) returns (StartGroupConferenceResponse){}
   rpc StartPublicConference (StartPublicConferenceRequest) returns (StartPublicConferenceResponse){}
   rpc JoinGroupConfernce (JoinGroupConferenceRequest) returns (JoinGroupConferenceResponse){}
